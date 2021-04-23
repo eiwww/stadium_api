@@ -29,8 +29,7 @@ router.post('/', async function(req,res,next){
     const pv = req.body.province;
     const tc = req.body.time_cancelbooking;
     const img = req.body.picture;
-    const stt = req.body.status;
-    await db.query("call stadium_add(?,?,?,?,?,?,?,?,?,?)", [id,nm,des,cc,vl,dt,pv,tc,img,stt], (err,result) => {
+    await db.query("call stadium_add(?,?,?,?,?,?,?,?,?)", [id,nm,des,cc,vl,dt,pv,tc,img], (err,result) => {
         if(err){
             console.log(err);
         }else{

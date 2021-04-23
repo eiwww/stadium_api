@@ -32,7 +32,7 @@ router.put('/', async function(req,res,next){
     })
     await db.query("call cancel_res_field(?,?,?)", [id,sid,tid], (err1, result) => {
         if(err1){
-            console.log(err);
+            console.log(err1);
         }
     })
 
