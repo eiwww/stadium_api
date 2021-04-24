@@ -51,9 +51,9 @@ router.post('/', async (req, res) => {
                         // });
 
                         jwt.sign({user:user}, "secretkey", (er, token) => {
-                            res.json({
-                                token,
-                            })
+                            res.cookie("access-token", token, { httpOnly: true });
+                            
+                            res.json({token});
                             // res.cookie("access-token", token, {
                             //     maxAge: 60 * 60 * 24 * 30 * 1000,
                             //     httpOnly: true,
@@ -66,7 +66,7 @@ router.post('/', async (req, res) => {
                 // res.send(dpw);
                 
             }else{
-                res.send("dddddddd");
+                res.send("Wrong Username and Password Combination!");
             }
         });
     

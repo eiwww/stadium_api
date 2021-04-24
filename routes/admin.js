@@ -20,22 +20,32 @@ router.get("/", async function (req, res, next) {
   });
 }); //ສະແດງເຈົ້າຂອງລະບົບ
 
-router.post("/", (req, res) => {
+router.post("/", async (req, res) => {
   const email = req.body.a_email;
   const pw = req.body.a_password;
   const nm = req.body.a_name;
   const img = req.body.a_img;
 
-  bcrypt.hash(pw, 10).then((hash) => {
-    db.query("call admin_add('',?,?,?,?)",[email, hash, nm, img],(err, result) => {
-        if (err) {
-          res.status(400).json({ error: err });
-        } else {
-          res.send("REGIS COMPLETE");
-        }
-      }
-    );
-  });
+  await db.query("call check_ad_email(?)", [email], (err,result) => {
+    if(result[0].length > 0){
+        
+      res.send("Email Already used!");
+        
+    }else{
+      bcrypt.hash(pw, 10).then((hash) => {
+        db.query("call admin_add('',?,?,?,?)",[email, hash, nm, img],(err, result) => {
+            if (err) {
+              res.status(400).json({ error: err });
+            } else {
+              res.send("REGIS COMPLETE");
+            }
+          }
+        );
+      });
+    }
+});
+
+  
 }); //ເພີ່ມເຈົ້າຂອງລະບົບ
 
 router.put("/", async function (req, res, next) {
