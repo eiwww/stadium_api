@@ -8,7 +8,7 @@ router.use(express.json());
 
 const db = mysql.createConnection(dbconfig.db);
 
-router.get('/', async function(req,res,next){
+router.get('/show', async function(req,res,next){
     await db.query("call stadium()", (err, result) => {
         if(err){
             console.log(err);
@@ -18,8 +18,18 @@ router.get('/', async function(req,res,next){
     })
 }) // ສະແດງຕາຕະລາງເດີ່ນທັງໝົດ
 
+router.get('/show/phone', async function(req,res,next){
+    const id = req.body.st_id;
+    await db.query("call stadium_phone(?)", [id], (err, result) => {
+        if(err){
+            console.log(err);
+        }else{
+            res.send(result);
+        }
+    })
+}) // ສະແດງຕາຕະລາງເບີໂທຂອງເດີ່ນ
 
-router.post('/', async function(req,res,next){
+router.post('/add', async function(req,res,next){
     const id = req.body.st_id;
     const nm = req.body.st_name;
     const des = req.body.description;
@@ -39,7 +49,32 @@ router.post('/', async function(req,res,next){
 })
 
 
-router.put('/', async function(req,res,next){
+router.post('/add/phone', async function(req,res,next){
+    const id = req.body.st_id;
+    const ph = req.body.st_phone;
+    await db.query("call stadium_phone_add(?,?)", [id,ph], (err,result) => {
+        if(err){
+            console.log(err);
+        }else{
+            res.send(result);
+        }
+    })
+})
+
+router.delete('/delete/phone', async function(req,res,next){
+    const id = req.body.st_id;
+    const ph = req.body.st_phone;
+    await db.query("call stadium_phone_delete(?,?)", [id,ph], (err,result) => {
+        if(err){
+            console.log(err);
+        }else{
+            res.send(result);
+        }
+    })
+})
+
+
+router.put('/edit', async function(req,res,next){
     const id = req.body.st_id;
     const nm = req.body.st_name;
     const des = req.body.description;
@@ -59,8 +94,8 @@ router.put('/', async function(req,res,next){
 })
 
 
-router.delete('/', async function(req,res,next){
-    const id = req.body.st_id;
+router.delete('/:st_id', async function(req,res,next){
+    const id = req.params.st_id;
     await db.query("call stadium_delete(?)", [id], (err,result) => {
         if(err){
             console.log(err);

@@ -4,7 +4,15 @@ var router = express.Router();
 const mysql = require('mysql');
 const dbconfig = require('../dbConnect/dbconnect');
 
+const bcrypt = require('bcrypt');
+const cookieParser = require('cookie-parser');
+const cors=require('cors');
+const jwt = require("jsonwebtoken");
+
+
 router.use(express.json());
+router.use(cookieParser());
+router.use(cors());
 
 const db = mysql.createConnection(dbconfig.db);
 
@@ -18,20 +26,83 @@ router.get('/', async function(req, res, next) {
     })
 }) //ສະແດງຜູ້ໃຊ້
 
+function verifyToken(req, res, next) {
+    const bearerHeader = req.headers['authorization']
+    if(typeof bearerHeader !== 'undefined'){
+        const bearerToken = bearerHeader.split(' ')[1];
+        req.token = bearerToken;
+        next();
+    }else{
+        res.sendStatus(403); //forbidden
+    }
+}
+
+router.post('/login', async (req,res) => {
+    const email = req.body.c_email;
+    const pw = req.body.c_password;
+    
+    await db.query("call check_user_email(?)", [email], (err, result) => {
+        if(result[0].length > 0){
+            const dpw = result[0][0].c_password;
+            const user = result[0];
+            bcrypt.compare(pw, dpw).then((match) => {
+                if(!match){
+                    res
+                        .status(400)
+                        .send({ error: "Wrong Username and Password Combination!" });
+                }else{
+                    jwt.sign({user:user}, "usecretkey", (er, token) => {
+                        res.cookie("access-token", token, { httpOnly: true});
+                        res.json({token});
+                    })
+                }
+            })
+        }else{
+            res.send("Wrong Username and Password Combination!");
+        }
+    })
+}) // ກວດສອບຕອນລ໊ອກອິນ
+
+router.post('/login/authen',verifyToken, (req, res) => {
+    jwt.verify(req.token, "usecretkey", (err, authData) => {
+        if(err){
+            res.sendStatus(403);
+        }else{
+            res.json({
+                messege: "User Complete",
+                authData
+            })
+        }
+    })
+}) // authen ດຶງຄ່າ
+
+
 router.post('/', async function(req, res, next) {
     const email = req.body.c_email;
     const password = req.body.c_password;
     const nm = req.body.c_name;
     const sn = req.body.c_surname;
     const pf = req.body.profile;
+    const ph = req.body.c_phone;
 
-    await db.query("call user_add('',?,?,?,?,?)", [email, password, nm, sn, pf], (err, result) => {
-        if(err){
-            console.log(err);
+    await db.query("call check_user_email(?)", [email], (err, result) => {
+        if(result[0].length > 0){
+            res.send("Email Aready used!");
         }else{
-            res.send(result)
+            bcrypt.hash(password, 10).then((hash) => {
+                db.query("call user_add('',?,?,?,?,?,?)", [email, hash, nm, sn, pf, ph], (err, result) => {
+                    if(err){
+                        res.status(400).json({ error: err });
+                    }else{
+                        res.send("User Complete");
+                    }
+                })
+            })
+            
         }
     })
+
+    
 }) //ເພີ່ມຜູ້ໃຊ້
 
 router.put('/', async function(req, res, next) {
@@ -41,7 +112,8 @@ router.put('/', async function(req, res, next) {
     const nm = req.body.c_name;
     const sn = req.body.c_surname;
     const pf = req.body.profile;
-    await db.query("call user_update(?,?,?,?,?,?)", [email, password, nm, sn, pf, id], (err, result) => {
+    const ph = req.body.c_phone;
+    await db.query("call user_update(?,?,?,?,?,?,?)", [email, password, nm, sn, pf, ph, id], (err, result) => {
         if(err){
             console.log(err);
         }else{
