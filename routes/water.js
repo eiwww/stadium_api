@@ -25,14 +25,37 @@ router.post('/', async function(req,res,next){
     const sid = req.body.st_id;
     const nm = req.body.stw_name;
     const pr = req.body.stw_price;
-    const pic = req.body.stw_picture;
-    await db.query("call water_add(?,?,?,?,?,'ຂາຍໄດ້')", [id,sid,nm,pr,pic], (err, result) => {
-        if(err){
-            console.log(err);
-        }else{
-            res.send(result);
-        }
-    })
+    const pic = "default_water.jpg";
+    
+    if(!req.files){
+        db.query("call water_add(?,?,?,?,?,'ຂາຍໄດ້')", [id,sid,nm,pr,pic], (err, result) => {
+            if(err){
+                console.log(err);
+            }else{
+                res.send(result);
+            }
+        })
+    }else{
+        let sampleFile = req.files.sampleFile;
+        let uploadPath = "./upload/water/" + sampleFile.name;
+
+        sampleFile.mv(uploadPath, function (err){
+            if(err) return res.status(500).send(err);
+
+            const im = sampleFile.name;
+
+            db.query("call water_add(?,?,?,?,?,'ຂາຍໄດ້')", [id,sid,nm,pr,im], (err, result) => {
+                if(err){
+                    console.log(err);
+                }else{
+                    res.send(result);
+                }
+            })
+        })
+
+    }
+
+    
 })
 
 router.put('/', async function(req,res,next){
@@ -41,13 +64,34 @@ router.put('/', async function(req,res,next){
     const pr = req.body.stw_price;
     const pic = req.body.stw_picture;
     const stt = req.body.stw_status;
-    await db.query("call water_update(?,?,?,?,?)", [nm,pr,pic,stt,id], (err, result) => {
-        if(err){
-            console.log(err);
-        }else{
-            res.send(result);
-        }
-    })
+
+    if(!req.files){
+        db.query("call water_update(?,?,?,?,?)", [nm,pr,pic,stt,id], (err, result) => {
+            if(err){
+                console.log(err);
+            }else{
+                res.send(result);
+            }
+        })
+    }else{
+        let sampleFile = req.files.sampleFile;
+        let uploadPath = "./upload/water/" + sampleFile.name;
+
+        sampleFile.mv(uploadPath, function (err){
+            if(err) return res.status(500).send(err);
+
+            const im = sampleFile.name;
+
+            db.query("call water_update(?,?,?,?,?)", [nm,pr,im,stt,id], (err, result) => {
+                if(err){
+                    console.log(err);
+                }else{
+                    res.send(result);
+                }
+            })
+        })
+
+    }
 })
 
 router.delete('/:stw_id', async function(req,res,next){
@@ -60,14 +104,6 @@ router.delete('/:stw_id', async function(req,res,next){
         }
     })
 })
-
-router.post('/img', (req,res) => {
-    if(!req.files){
-      res.status(400).send('No Files were uploaded.');
-    }else{
-      res.json("FAK");
-    }
-  })
 
 
 module.exports = router;
