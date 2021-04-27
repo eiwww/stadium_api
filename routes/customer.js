@@ -9,6 +9,8 @@ const cookieParser = require('cookie-parser');
 const cors=require('cors');
 const jwt = require("jsonwebtoken");
 
+router.use(express.static('public'));
+router.use(express.static('upload'));
 
 router.use(express.json());
 router.use(cookieParser());
@@ -77,27 +79,51 @@ router.post('/login/authen',verifyToken, (req, res) => {
 }) // authen ດຶງຄ່າ
 
 
-router.post('/', async function(req, res, next) {
+router.post('/', async (req, res) => {
     const email = req.body.c_email;
     const password = req.body.c_password;
     const nm = req.body.c_name;
     const sn = req.body.c_surname;
-    const pf = req.body.profile;
+    const pf = "default.jpg";
     const ph = req.body.c_phone;
 
     await db.query("call check_user_email(?)", [email], (err, result) => {
         if(result[0].length > 0){
             res.send("Email Aready used!");
         }else{
-            bcrypt.hash(password, 10).then((hash) => {
-                db.query("call user_add('',?,?,?,?,?,?)", [email, hash, nm, sn, pf, ph], (err, result) => {
-                    if(err){
-                        res.status(400).json({ error: err });
-                    }else{
-                        res.send("User Complete");
-                    }
+            if(!req.files){
+                bcrypt.hash(password, 10).then((hash) => {
+                    db.query("call user_add('',?,?,?,?,?,?)", [email, hash, nm, sn, pf, ph], (err, result) => {
+                        if(err){
+                            res.status(400).json({ error: err });
+                        }else{
+                            res.send("User Complete");
+                        }
+                    })
                 })
-            })
+            }else{
+
+                let sampleFile = req.files.sampleFile;
+                let uploadPath = "./upload/user/" + sampleFile.name;
+
+                sampleFile.mv(uploadPath, function(err){
+                    if(err) return res.status(500).send(err);
+
+                    const im = sampleFile.name;
+
+                    bcrypt.hash(password, 10).then((hash) => {
+                        db.query("call user_add('',?,?,?,?,?,?)", [email, hash, nm, sn, im, ph], (err, result) => {
+                            if(err){
+                                res.status(400).json({ error: err });
+                            }else{
+                                res.send("User Complete");
+                            }
+                        })
+                    })
+                })
+
+            }
+            
             
         }
     })
@@ -105,21 +131,42 @@ router.post('/', async function(req, res, next) {
     
 }) //ເພີ່ມຜູ້ໃຊ້
 
-router.put('/', async function(req, res, next) {
+router.put('/', async (req, res) => {
     const id = req.body.c_id
-    const email = req.body.c_email;
-    const password = req.body.c_password;
     const nm = req.body.c_name;
     const sn = req.body.c_surname;
     const pf = req.body.profile;
     const ph = req.body.c_phone;
-    await db.query("call user_update(?,?,?,?,?,?,?)", [email, password, nm, sn, pf, ph, id], (err, result) => {
-        if(err){
-            console.log(err);
-        }else{
-            res.send(result)
-        }
-    })
+
+    if(!req.files){
+        await db.query("call user_update(?,?,?,?,?)", [nm, sn, pf, ph, id], (err, result) => {
+            if(err){
+                console.log(err);
+            }else{
+                res.send(result)
+            }
+        })
+    }else{
+
+        let sampleFile = req.files.sampleFile;
+        let uploadPath = "./upload/user/"+ sampleFile.name;
+
+        sampleFile.mv(uploadPath, function(err){
+            if(err) return res.status(500).send(err);
+
+            const im = sampleFile.name;
+
+            db.query("call user_update(?,?,?,?,?)", [nm, sn, im, ph, id], (err, result) => {
+                if(err){
+                    console.log(err);
+                }else{
+                    res.send(result)
+                }
+            })
+        })
+
+    }
+    
 }) //ແກ້ໄຂຜູ້ໃຊ້
 
 router.delete('/', async function(req, res, next) {

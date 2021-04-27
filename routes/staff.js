@@ -83,43 +83,85 @@ router.post('/', async function(req,res,next) {
     const stt = req.body.status;
     const em = req.body.su_email;
     const pw = req.body.su_password;
-    const img = req.body.picture;
+    const img = "defualt.jpg";
 
     await db.query("call check_staff_email(?)", [em], (err,result) => {
         if(result[0].length > 0){
             res.send("Email Already used!");
         }else{
-            bcrypt.hash(pw, 10).then((hash) => {
-                db.query("call staff_add(?,?,?,?,?,?,?,?)" , [stid,name,sn,age,em,hash,img,stt],(err,result) => {
-                    if(err){
-                        res.status(400).json({ error: err });
-                    }else{
-                        res.send("Staff Complete");
-                    }
+            if(!req.files){
+                bcrypt.hash(pw, 10).then((hash) => {
+                    db.query("call staff_add(?,?,?,?,?,?,?,?)" , [stid,name,sn,age,em,hash,img,stt],(err,result) => {
+                        if(err){
+                            res.status(400).json({ error: err });
+                        }else{
+                            res.send("Staff Complete");
+                        }
+                    })
                 })
-            })
+            }else{
+
+                let sampleFile = req.files.sampleFile;
+                let uploadPath = "./upload/staff/"+sampleFile.name;
+
+                sampleFile.mv(uploadPath, function(err){
+                    if(err) return res.status(500).send(err);
+
+                    const im = sampleFile.name;
+
+                    bcrypt.hash(pw, 10).then((hash) => {
+                        db.query("call staff_add(?,?,?,?,?,?,?,?)" , [stid,name,sn,age,em,hash,im,stt],(err,result) => {
+                            if(err){
+                                res.status(400).json({ error: err });
+                            }else{
+                                res.send("Staff Complete");
+                            }
+                        })
+                    })
+                })
+
+            }
+            
         }
     })
     
 }) // add staff
 
 router.put('/', async function(req,res,next) {
-    const id = req.body.st_id;
-    const stid = req.body.st_id;
+    const id = req.body.su_id;
     const name = req.body.su_name;
     const sn = req.body.su_surname;
     const age = req.body.su_age;
-    const em = req.body.su_email;
-    const pw = req.body.su_password;
     const img = req.body.picture;
     const stt = req.body.status;
-    await db.query("call staff_update(?,?,?,?,?,?,?,?,?)" , [stid,name,sn,age,em,pw,img,stt,id],(err,result) => {
-        if(err){
-            console.log(err);
-        }else{
-            res.send(result);
-        }
-    })
+
+    if(!req.files){
+        db.query("call staff_update(?,?,?,?,?,?)" , [name,sn,age,img,stt,id],(err,result) => {
+            if(err){
+                console.log(err);
+            }else{
+                res.send(result);
+            }
+        })
+    }else{
+         let sampleFile = req.files.sampleFile;
+         let uploadPath = "./upload/staff/"+sampleFile.name;
+
+         sampleFile.mv(uploadPath, function(err){
+             if(err) return res.status(500).send(err);
+
+             const im = sampleFile.name;
+
+             db.query("call staff_update(?,?,?,?,?,?)", [name,sn,age,im,stt,id],(err,result) => {
+                if(err){
+                    console.log(err);
+                }else{
+                    res.send(result);
+                }
+            })
+         })
+    }
+    
 })
 
 router.delete('/', async function(req,res,next) {

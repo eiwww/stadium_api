@@ -61,6 +61,13 @@ router.delete('/:stw_id', async function(req,res,next){
     })
 })
 
+router.post('/img', (req,res) => {
+    if(!req.files){
+      res.status(400).send('No Files were uploaded.');
+    }else{
+      res.json("FAK");
+    }
+  })
 
 
 module.exports = router;

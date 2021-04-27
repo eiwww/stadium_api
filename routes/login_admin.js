@@ -7,7 +7,7 @@ const dbconfig = require('../dbConnect/dbconnect');
 const bcrypt = require('bcrypt');
 const cookieParser = require('cookie-parser');
 const cors=require('cors');
-const { createTokens, validateToken } = require("../middleware/JWT");
+//const { createTokens, validateToken } = require("../middleware/JWT");
 const jwt = require("jsonwebtoken");
 
 router.use(express.json());
@@ -43,12 +43,6 @@ router.post('/', async (req, res) => {
                             .status(400)
                             .send({ error: "Wrong Username and Password Combination!" });
                     }else{
-                        // const accessToken = createTokens(user);
-
-                        // res.cookie("access-token", accessToken, {
-                        //     maxAge: 60 * 60 * 24 * 30 * 1000,
-                        //     httpOnly: true,
-                        // });
 
                         jwt.sign({user:user}, "secretkey", (er, token) => {
                             res.cookie("access-token", token, { httpOnly: true });
@@ -72,23 +66,6 @@ router.post('/', async (req, res) => {
     
 
     
-    // bcrypt.compare(pw, "$2b$10$1sXSGO3Ag").then((match) => {
-    //     if (!match) {
-    //         res
-    //           .status(400)
-    //           .json({ error: "Wrong Username and Password Combination!" });
-    //       } else {   
-      
-    //         res.json("LOGGED IN");
-    //       }
-    // })
-    //if(!user) res.status(400).json({ error: "User Doesn't Exist" });
-
-    // const dbpw = user.a_password;
-
-    // res.send(dbpw);
-
-    
 })
 
 function verifyToken(req, res, next) {
@@ -102,8 +79,6 @@ function verifyToken(req, res, next) {
     }
 }
 
-router.get("/profile", validateToken, (req, res) => {
-    res.send("profile");
-  });
+
 
 module.exports = router;
