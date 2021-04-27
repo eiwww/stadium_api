@@ -8,8 +8,8 @@ router.use(express.json());
 
 const db = mysql.createConnection(dbconfig.db);
 
-router.get('/', async function(req,res,next){
-    const id = req.body.std_id;
+router.get('/:st_id', async function(req,res,next){
+    const id = req.params.st_id;
     await db.query("call field(?)", [id] , (err,result) => {
         if(err){
             console.log(err);
@@ -23,14 +23,30 @@ router.post('/', async function(req, res, next) {
     const id = req.body.std_id
     const sid = req.body.st_id;
     const nm = req.body.std_name;
-    const pf = req.body.picture;
-    await db.query("call field_add(?,?,?,?)", [id, sid, nm, pf], (err, result) => {
-        if(err){
-            console.log(err);
-        }else{
-            res.send(result)
-        }
-    })
+    
+
+    if(!req.files){
+        res.send("Please choose field image to show");
+    }else{
+        let sampleFile = req.files.sampleFile;
+        let uploadPath = "./upload/field/" + sampleFile.name;
+
+        sampleFile.mv(uploadPath, function(err){
+            if(err) return res.status(500).send(err);
+
+            const pf = sampleFile.name;
+
+            db.query("call field_add(?,?,?,?)", [id, sid, nm, pf], (err, result) => {
+                if(err){
+                    console.log(err);
+                }else{
+                    res.send(result)
+                }
+            })
+        })
+        
+    }
+    
 })
 
 
@@ -39,13 +55,34 @@ router.put('/', async function(req, res, next) {
     const st = req.body.std_status;
     const nm = req.body.std_name;
     const pf = req.body.picture;
-    await db.query("call field_update(?,?,?,?)", [nm, st, pf, id], (err, result) => {
-        if(err){
-            console.log(err);
-        }else{
-            res.send(result)
-        }
-    })
+
+    if(!req.files){
+        db.query("call field_update(?,?,?,?)", [nm, st, pf, id], (err, result) => {
+            if(err){
+                console.log(err);
+            }else{
+                res.send(result)
+            }
+        })
+    }else{
+        let sampleFile = req.files.sampleFile;
+        let uploadPath = "./upload/field/"+sampleFile.name;
+
+        sampleFile.mv(uploadPath, function(err){
+            if(err) return res.status(500).send(err);
+
+            const pff = sampleFile.name;
+
+            db.query("call field_update(?,?,?,?)", [nm, st, pff, id], (err, result) => {
+                if(err){
+                    console.log(err);
+                }else{
+                    res.send(result)
+                }
+            })
+        })
+    }
+    
 })
 
 module.exports = router;

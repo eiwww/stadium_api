@@ -38,14 +38,29 @@ router.post('/add', async function(req,res,next){
     const dt = req.body.district;
     const pv = req.body.province;
     const tc = req.body.time_cancelbooking;
-    const img = req.body.picture;
-    await db.query("call stadium_add(?,?,?,?,?,?,?,?,?)", [id,nm,des,cc,vl,dt,pv,tc,img], (err,result) => {
-        if(err){
-            console.log(err);
-        }else{
-            res.send(result);
-        }
-    })
+    
+
+    if(!req.files){
+        res.send("Please choose the image");
+    }else{
+        let sampleFile = req.files.sampleFile;
+        let uploadPath = "./upload/stadium/" + sampleFile.name;
+
+        sampleFile.mv(uploadPath, function(err){
+            if(err) return res.status(500).send(err);
+
+            const img = sampleFile.name;
+            db.query("call stadium_add(?,?,?,?,?,?,?,?,?)", [id,nm,des,cc,vl,dt,pv,tc,img], (err,result) => {
+                if(err){
+                    console.log(err);
+                }else{
+                    res.send(result);
+                }
+            })
+        })
+        
+    }
+    
 })
 
 
@@ -84,13 +99,35 @@ router.put('/edit', async function(req,res,next){
     const tc = req.body.time_cancelbooking;
     const img = req.body.picture;
     const stt = req.body.status;
-    await db.query("call stadium_update(?,?,?,?,?,?,?,?,?)", [nm,des,vl,dt,pv,tc,img,stt,id], (err,result) => {
-        if(err){
-            console.log(err);
-        }else{
-            res.send(result);
-        }
-    })
+
+    if(!req.files){
+        db.query("call stadium_update(?,?,?,?,?,?,?,?,?)", [nm,des,vl,dt,pv,tc,img,stt,id], (err,result) => {
+            if(err){
+                console.log(err);
+            }else{
+                res.send(result);
+            }
+        })
+    }else{
+        
+        let sampleFile = req.files.sampleFile;
+        let uploadPath = "./upload/stadium/"+sampleFile.name;
+
+        sampleFile.mv(uploadPath, function(err){
+            if(err) return res.status(500).send(err);
+
+            const im = sampleFile.name;
+            db.query("call stadium_update(?,?,?,?,?,?,?,?,?)", [nm,des,vl,dt,pv,tc,im,stt,id], (err,result) => {
+                if(err){
+                    console.log(err);
+                }else{
+                    res.send(result);
+                }
+            })
+        })
+
+    }
+    
 })
 
 
