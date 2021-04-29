@@ -14,29 +14,46 @@ router.get('/', async function(req,res,next){
         if(err){
             console.log(err);
         }else{
+            // if(result === 1){
+            //     res.send("TRUE");
+            // }else{
+            //     res.send("False");
+            // }
             res.send(result);
         }
     })
 })
 
 
-router.put('/', async function(req,res,next){
+router.put('/', async (req,res) => {
     const id = req.body.b_id;
     const sid = req.body.std_id;
     const tid = req.body.td_id;
 
-    await db.query("call cancel_res_pass(?)", [id], (err, result) => {
+    await db.query("call cancel_reserve(?)", [id], async (err, result) => {
         if(err){
             console.log(err);
-        }
-    })
-    await db.query("call cancel_res_field(?,?,?)", [id,sid,tid], (err1, result) => {
-        if(err1){
-            console.log(err1);
+        }else{
+            if(result[0][0].c===1){
+                await db.query("call cancel_res_pass(?)", [id], (err, result) => {
+                    if(err){
+                        console.log(err);
+                    }
+                })
+                await db.query("call cancel_res_field(?,?,?)", [id,sid,tid], (err1, result) => {
+                    if(err1){
+                        console.log(err1);
+                    }
+                })
+            
+                res.send("ຍົກເລີກສໍາເລັດ");
+            }else{
+                res.send("ບໍ່ສາມາດຍົກເລີກໄດ້ຍົກເລີກສໍາເລັດ");
+            }
         }
     })
 
-    res.send("ຍົກເລີກສໍາເລັດ");
+    
 })
 
 module.exports = router;

@@ -13,7 +13,7 @@ const db = mysql.createConnection(dbconfig.db);
 
 
 router.get('/', async function(req,res,next){
-    await db.query("call reserve_nou_show()", (err, result) => {
+    await db.query("call reserve_all()", (err, result) => {
         if(err){
             console.log(err);
         }else{
@@ -25,7 +25,7 @@ router.get('/', async function(req,res,next){
 router.post('/', async function(req,res,next){
     const id = req.body.b_id;
     const stid = req.body.st_id;
-    const sid = req.body.s_id;
+    const sid = req.body.su_id;
     const th = req.body.time;
 
     const nm = req.body.b_name;
