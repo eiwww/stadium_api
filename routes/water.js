@@ -17,7 +17,7 @@ router.get('/:st_id', async function(req,res,next){
             res.send(result);
         }
     })
-})
+}) // ສະແດງລາຍການນໍ້າຂອງເດີ່ນນັ້ນ ||||||||||||||||||||||||||||||||||||||||||||||||||
 
 
 router.post('/', async function(req,res,next){
@@ -56,7 +56,7 @@ router.post('/', async function(req,res,next){
     }
 
     
-})
+}) // ເພີ່ມລາຍການນໍ້າໃຫ້ເດີ່ນນັ້ນ ||||||||||||||||||||||||||||||||||||||||||||||||||
 
 router.put('/', async function(req,res,next){
     const id = req.body.stw_id;
@@ -92,7 +92,7 @@ router.put('/', async function(req,res,next){
         })
 
     }
-})
+}) // ແກ້ໄຂລາຍການນໍ້າໃຫ້ເດີ່ນນັ້ນ ||||||||||||||||||||||||||||||||||||||||||||||||||
 
 router.delete('/:stw_id', async function(req,res,next){
     const id = req.params.stw_id;
@@ -103,7 +103,7 @@ router.delete('/:stw_id', async function(req,res,next){
             res.send(result);
         }
     })
-})
+})  // ລົບລາຍການນໍ້າໃຫ້ເດີ່ນນັ້ນ ||||||||||||||||||||||||||||||||||||||||||||||||||
 
 
 module.exports = router;

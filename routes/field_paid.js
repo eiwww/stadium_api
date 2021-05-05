@@ -20,7 +20,7 @@ router.get('/', async function(req,res,next){
             res.send(result);
         }
     })
-})
+}) // ລວມລາຄາເດີ່ນໃນໃບບິນນັ້ນ ||||||||||||||||||||||||||||||||||||||||||||||||||
 
 
 router.post('/', async function(req,res,next){
@@ -35,7 +35,7 @@ router.post('/', async function(req,res,next){
             res.send(result);
         }
     })
-})
+}) // ເພີ່ມລາຄາເດີ່ນເຂົ້າໃນໃບບິນ ||||||||||||||||||||||||||||||||||||||||||||||||||
 
 
 module.exports = router;

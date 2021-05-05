@@ -8,21 +8,21 @@ router.use(express.json());
 
 const db = mysql.createConnection(dbconfig.db);
 
-router.get('/', async function(req,res,next){
-    const id = req.body.b_id;
-    await db.query("call cancel_reserve(?)", [id], (err, result) => {
-        if(err){
-            console.log(err);
-        }else{
-            // if(result === 1){
-            //     res.send("TRUE");
-            // }else{
-            //     res.send("False");
-            // }
-            res.send(result);
-        }
-    })
-})
+// router.get('/', async function(req,res,next){
+//     const id = req.body.b_id;
+//     await db.query("call cancel_reserve(?)", [id], (err, result) => {
+//         if(err){
+//             console.log(err);
+//         }else{
+//             // if(result === 1){
+//             //     res.send("TRUE");
+//             // }else{
+//             //     res.send("False");
+//             // }
+//             res.send(result);
+//         }
+//     })
+// })
 
 
 router.put('/', async (req,res) => {
@@ -30,17 +30,18 @@ router.put('/', async (req,res) => {
     const sid = req.body.std_id;
     const tid = req.body.td_id;
 
-    await db.query("call cancel_reserve(?)", [id], async (err, result) => {
+    await db.query("call cancel_reserve(?)", [id], async (err, result) => { //ກວດສອບລາຍການຈອງດັ່ງກ່າວ ວ່າສາມາດຍົກເລີກໄດ້ບໍ່ 
+                                                                            //if = 0 man yok lerk br dai // if = 1 man yok lerk dai
         if(err){
             console.log(err);
         }else{
             if(result[0][0].c===1){
-                await db.query("call cancel_res_pass(?)", [id], (err, result) => {
+                await db.query("call cancel_res_pass(?)", [id], (err, result) => {   //ຍົກເລີກໃນຂໍ້ມູນການຈອງຫຼັກ
                     if(err){
                         console.log(err);
                     }
                 })
-                await db.query("call cancel_res_field(?,?,?)", [id,sid,tid], (err1, result) => {
+                await db.query("call cancel_res_field(?,?,?)", [id,sid,tid], (err1, result) => {   //ຍົກເລີກໃນຂໍ້ມູນການຈອງຂອງເດີ່ນໃນສະໜາມ
                     if(err1){
                         console.log(err1);
                     }

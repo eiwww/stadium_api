@@ -21,7 +21,7 @@ router.get("/", async function (req, res, next) {
       res.send(result);
     }
   });
-}); //ສະແດງເຈົ້າຂອງລະບົບ
+}); //ສະແດງເຈົ້າຂອງລະບົບ ||||||||||||||||||||||||||||||||||||||||||||||||||
 
 
 
@@ -34,13 +34,14 @@ router.post("/", async (req, res) => {
   const nm = req.body.a_name;
   const img = 'default.jpg';
 
-  if(!req.files){
-    await db.query("call check_ad_email(?)", [email], (err,result) => {
-      if(result[0].length > 0){
-          
-        res.send("Email Already used!");
-          
-      }else{
+
+  await db.query("call check_ad_email(?)", [email], (err,result) => {
+    if(result[0].length > 0){
+        
+      res.send("Email Already used!");
+        
+    }else{
+      if(!req.files){
         bcrypt.hash(pw, 10).then((hash) => {
           db.query("call admin_add('',?,?,?,?)",[email, hash, nm, img],(err, result) => {
               if (err) {
@@ -51,21 +52,10 @@ router.post("/", async (req, res) => {
             }
           );
         });
-      }
-    });
-  }else{
-
-    
-    let sampleFile = req.files.sampleFile;
-    let uploadPath = "./upload/admin/" + sampleFile.name;
-
-    await db.query("call check_ad_email(?)", [email], (err,result) => {
-      if(result[0].length > 0){
-          
-        res.send("Email Already used!");
-          
       }else{
-        
+        let sampleFile = req.files.sampleFile;
+        let uploadPath = "./upload/admin/" + sampleFile.name;
+
         sampleFile.mv(uploadPath, function(err){
           if(err) return res.status(500).send(err);
 
@@ -82,15 +72,12 @@ router.post("/", async (req, res) => {
               );
             });
         })
-
-        
       }
-    });
-  }
       
-  
+    }
+  });
 
-}); //ເພີ່ມເຈົ້າຂອງລະບົບ
+}); //ເພີ່ມເຈົ້າຂອງລະບົບ ||||||||||||||||||||||||||||||||||||||||||||||||||
 
 router.put("/", async (req, res) => {
   const id = req.body.a_id;
@@ -124,7 +111,7 @@ router.put("/", async (req, res) => {
     );
     })
   }
-}); //ແກ້ໄຂເຈົ້າຂອງລະບົບ
+}); //ແກ້ໄຂເຈົ້າຂອງລະບົບ ||||||||||||||||||||||||||||||||||||||||||||||||||
 
 router.delete("/", async function (req, res, next) {
   const id = req.body.a_id;
@@ -135,7 +122,7 @@ router.delete("/", async function (req, res, next) {
       res.send(result);
     }
   });
-}); //ລົບເຈົ້າຂອງລະບົບ
+}); //ລົບເຈົ້າຂອງລະບົບ ||||||||||||||||||||||||||||||||||||||||||||||||||
 
 
 

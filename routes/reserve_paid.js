@@ -9,6 +9,17 @@ router.use(express.json());
 
 const db = mysql.createConnection(dbconfig.db);
 
+router.get('/', async function(req,res,next){
+    const sid = req.body.st_id;
+
+    await db.query("call reserve_staff_all(?)" , [sid], (err,result) => {
+        if(err){
+            console.log(err);
+        }else{
+            res.send(result);
+        }
+    })
+}) // ສະແດງລາຍກາ່ນຈອງທັງໝົດຂອງເດີ່ນນັ້ນໆ ||||||||||||||||||||||||||||||||||||||||||||||||||
 
 router.post('/', async function(req,res,next){
     const pid = req.body.bp_id;
@@ -22,7 +33,7 @@ router.post('/', async function(req,res,next){
             res.send(result);
         }
     })
-})
+}) // ເປີດໃບບິນ ||||||||||||||||||||||||||||||||||||||||||||||||||
 
 
 router.put('/', async function(req,res,next){
@@ -37,7 +48,7 @@ router.put('/', async function(req,res,next){
             res.send(result);
         }
     })
-})
+}) // ສໍາເລັດການຊໍາລະເງີນ ||||||||||||||||||||||||||||||||||||||||||||||||||
 
 
 module.exports = router;

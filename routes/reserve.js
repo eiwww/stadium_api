@@ -20,7 +20,7 @@ router.get('/', async function(req,res,next){
             res.send(result);
         }
     })
-})
+}) // ສະແດງລາຍການຈອງທັງໝົດໃຫ້ຜູ້ໃຊ້ ||||||||||||||||||||||||||||||||||||||||||||||||||
 
 router.post('/', async function(req,res,next){
     const id = req.body.b_id;
@@ -40,20 +40,20 @@ router.post('/', async function(req,res,next){
             if(err){
                 console.log(err);
             }
-        })
+        }) // ເພີ່ມຂໍ້ມູນການຈອງຫຼັກໂດຍພະນັກງານ
         await db.query("call reserve_nou_add(?,?,?,?)", [id,nm,tm,tel], (err1, result) => {
             if(err1){
                 console.log(err1);
             }
-        })
+        }) // ເພີ່ມຂໍ້ມູນຜູ້ໃຊ້ທີ່ບໍ່ມີບັນຊີ
         await db.query("call reserve_cus_field(?,?,?,?)", [id,fid,tid,kd], (err2,result1) => {
             if(err2){
                 console.log(err2);
             }
-        })
+        }) // ເພີ່ມຂໍ້ມູນເດີ່ນທີ່ຈອງໂດຍພະນັກງານ
 
     res.send("Reserve Complete");
-})
+}) // ເພີ່ມລາຍການຈອງ ||||||||||||||||||||||||||||||||||||||||||||||||||
 
 
 
@@ -61,6 +61,6 @@ router.post('/', async function(req,res,next){
 
 // CHECK IF DATE CAN CANCEL : SELECT booking_timecancel>=now() from `tbbooking` where b_id='stt1' // if = 0 man yok lerk br dai // if = 1 man yok lerk dai 
 
-// INSERT DATE TIME CANCEL DATE_ADD("2020-06-15 05:00:00", INTERVAL 12 DAY_HOUR)
+// INSERT DATE TIME CANCEL DATE_ADD("2020-06-15 05:00:00", INTERVAL 12 DAY_HOUR) // ໃຫ້ເພີ່ມເວລາທີ່ເອົາໃສ່ຕາມຈໍານວນ INTERVAL ຊົ່ວໂມງ
 
 module.exports = router;

@@ -23,7 +23,7 @@ router.get('/', async function(req,res,next) {
             res.send(result);
         }
     })
-}) // show staff
+}) // ສະແດງພະນັກງານທັງໝົດຂອງເດີ່ນ ||||||||||||||||||||||||||||||||||||||||||||||||||
 
 function verifyToken(req, res, next) {
     const bearerHeader = req.headers['authorization']
@@ -34,7 +34,7 @@ function verifyToken(req, res, next) {
     }else{
         res.sendStatus(403); //forbidden
     }
-}
+} // function ແປງ token ເປັນຂໍ້ມູນ
 
 
 router.post('/login', async(req, res) => {
@@ -62,7 +62,7 @@ router.post('/login', async(req, res) => {
             res.send("Wrong Username and Password Combination!");
         }
     })
-})
+}) // ລ໊ອກອິນຂອງພະນັກງານ ||||||||||||||||||||||||||||||||||||||||||||||||||
 
 router.post('/login/authen',verifyToken, (req, res) => {
     jwt.verify(req.token, "ssecretkey", (err, authData) => {
@@ -72,7 +72,7 @@ router.post('/login/authen',verifyToken, (req, res) => {
             res.json({message: "Staff Complete", authData});
         }
     })
-})
+}) // authen ສົ່ງຂໍ້ມູນທີ່ແປງຈາກ token ||||||||||||||||||||||||||||||||||||||||||||||||||
 
 
 router.post('/', async function(req,res,next) {
@@ -125,7 +125,7 @@ router.post('/', async function(req,res,next) {
         }
     })
     
-}) // add staff
+}) // ເພີ່ມພະນັກງານຂອງເດີ່ນ ||||||||||||||||||||||||||||||||||||||||||||||||||
 
 router.put('/', async function(req,res,next) {
     const id = req.body.su_id;
@@ -162,7 +162,7 @@ router.put('/', async function(req,res,next) {
          })
     }
     
-})
+}) // ແກ້ໄຂຂໍ້ມູນພະນັກງານເດີ່ນ ||||||||||||||||||||||||||||||||||||||||||||||||||
 
 router.delete('/', async function(req,res,next) {
     const is = req.body.su_id;
@@ -173,6 +173,6 @@ router.delete('/', async function(req,res,next) {
             res.send(result);
         }
     })
-})
+}) // ລົບຂໍ້ມູນຳພະນັກງານ ||||||||||||||||||||||||||||||||||||||||||||||||||
 
 module.exports = router;

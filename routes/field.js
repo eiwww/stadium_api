@@ -17,7 +17,7 @@ router.get('/:st_id', async function(req,res,next){
             res.send(result);
         }
     })
-}) 
+}) // ສະແດງສະໜາມທັງໝົດທີ່ມີໃນເດີ່ນນັ້ນ ||||||||||||||||||||||||||||||||||||||||||||||||||
 
 router.post('/', async function(req, res, next) {
     const id = req.body.std_id
@@ -47,7 +47,7 @@ router.post('/', async function(req, res, next) {
         
     }
     
-})
+}) // ເພື່ມສະໜາມໃໝ່ໃຫ້ເດີ່ນ ||||||||||||||||||||||||||||||||||||||||||||||||||
 
 
 router.put('/', async function(req, res, next) {
@@ -83,6 +83,6 @@ router.put('/', async function(req, res, next) {
         })
     }
     
-})
+}) // ແກ້ໄຂສະໜາມຂອງເດີ່ນນັ້ນ ||||||||||||||||||||||||||||||||||||||||||||||||||
 
 module.exports = router;

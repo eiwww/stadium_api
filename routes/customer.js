@@ -63,7 +63,7 @@ router.post('/login', async (req,res) => {
             res.send("Wrong Username and Password Combination!");
         }
     })
-}) // ກວດສອບຕອນລ໊ອກອິນ
+}) // ກວດສອບຕອນລ໊ອກອິນ ພ້ອມສົ່ງຄ່າ token ||||||||||||||||||||||||||||||||||||||||||||||||||
 
 router.post('/login/authen',verifyToken, (req, res) => {
     jwt.verify(req.token, "usecretkey", (err, authData) => {
@@ -76,7 +76,7 @@ router.post('/login/authen',verifyToken, (req, res) => {
             })
         }
     })
-}) // authen ດຶງຄ່າ
+}) // authen ດຶງຄ່າ ຈາກ token ||||||||||||||||||||||||||||||||||||||||||||||||||
 
 
 router.post('/', async (req, res) => {
@@ -121,15 +121,12 @@ router.post('/', async (req, res) => {
                         })
                     })
                 })
-
             }
-            
-            
         }
     })
 
     
-}) //ເພີ່ມຜູ້ໃຊ້
+}) //ເພີ່ມຜູ້ໃຊ້ ||||||||||||||||||||||||||||||||||||||||||||||||||
 
 router.put('/', async (req, res) => {
     const id = req.body.c_id
@@ -167,7 +164,7 @@ router.put('/', async (req, res) => {
 
     }
     
-}) //ແກ້ໄຂຜູ້ໃຊ້
+}) //ແກ້ໄຂຜູ້ໃຊ້ ||||||||||||||||||||||||||||||||||||||||||||||||||
 
 router.delete('/', async function(req, res, next) {
     const id = req.body.c_id
@@ -178,6 +175,6 @@ router.delete('/', async function(req, res, next) {
             res.send(result)
         }
     })
-}) //ລົບຜູ້ໃຊ້
+}) //ລົບຜູ້ໃຊ້ ||||||||||||||||||||||||||||||||||||||||||||||||||
 
 module.exports = router;

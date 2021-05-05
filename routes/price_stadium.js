@@ -17,6 +17,34 @@ router.get('/', async function(req, res, next) {
             res.send(result);
         }
     })
-})
+}) // ສະແດງລາຍການລາຄາຂອງເດີ່ນນັ້ນ ||||||||||||||||||||||||||||||||||||||||||||||||||
+
+router.post('/', async function(req ,res, next) {
+    const sid = req.body.std_id;
+    const tid = req.body.td_id;
+    const pr = req.body.sp_price;
+
+    await db.query("call stadium_price_add(?,?,?)", [sid,tid,pr], (err, result) => {
+        if(err){
+            console.log(err);
+        }else{
+            res.send(result);
+        }
+    })
+}) // ໃສ່ລາຄາເດີ່ນຕາມເວລາ ||||||||||||||||||||||||||||||||||||||||||||||||||
+
+router.delete('/', async function(req, res, next) {
+    const sid = req.body.std_id;
+    const tid = req.body.td_id;
+    const pr = req.body.sp_price;
+
+    await db.query("call stadium_price_edit(?,?,?)", [pr,sid,tid], (err, result) => {
+        if(err){
+            console.log(err);
+        }else{
+            res.send(result);
+        }
+    })
+}) // ແກ້ໄຂລາຄາເດີ່ນ ||||||||||||||||||||||||||||||||||||||||||||||||||
 
 module.exports = router;

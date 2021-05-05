@@ -27,7 +27,7 @@ router.post('/posts',verifyToken, (req, res) => {
             })
         }
     })
-})
+}) //ແປງ token ເປັນຂໍ້ມູນສົ່ງໄປ ||||||||||||||||||||||||||||||||||||||||||||||||||
 
 router.post('/', async (req, res) => {
     const email = req.body.a_email;
@@ -66,7 +66,7 @@ router.post('/', async (req, res) => {
     
 
     
-})
+}) // ລ໊ອກອິນເຂົ້າລະບົບຂອງ admin ||||||||||||||||||||||||||||||||||||||||||||||||||
 
 function verifyToken(req, res, next) {
     const bearerHeader = req.headers['authorization']
@@ -77,7 +77,7 @@ function verifyToken(req, res, next) {
     }else{
         res.sendStatus(403); //forbidden
     }
-}
+} // function ແປງ token ເປັນຂໍ້ມູນ ||||||||||||||||||||||||||||||||||||||||||||||||||
 
 
 

@@ -16,7 +16,7 @@ router.get('/show', async function(req,res,next){
             res.send(result);
         }
     })
-}) // ສະແດງຕາຕະລາງເດີ່ນທັງໝົດ
+}) // ສະແດງຕາຕະລາງເດີ່ນທັງໝົດ ||||||||||||||||||||||||||||||||||||||||||||||||||
 
 router.get('/show/phone', async function(req,res,next){
     const id = req.body.st_id;
@@ -27,7 +27,7 @@ router.get('/show/phone', async function(req,res,next){
             res.send(result);
         }
     })
-}) // ສະແດງຕາຕະລາງເບີໂທຂອງເດີ່ນ
+}) // ສະແດງຕາຕະລາງເບີໂທຂອງເດີ່ນ ||||||||||||||||||||||||||||||||||||||||||||||||||
 
 router.post('/add', async function(req,res,next){
     const id = req.body.st_id;
@@ -61,7 +61,7 @@ router.post('/add', async function(req,res,next){
         
     }
     
-})
+}) // ເພີ່ມເດີ່ນເຂົ້າໃນລະບົບ ||||||||||||||||||||||||||||||||||||||||||||||||||
 
 
 router.post('/add/phone', async function(req,res,next){
@@ -74,7 +74,7 @@ router.post('/add/phone', async function(req,res,next){
             res.send(result);
         }
     })
-})
+}) // ເພີ່ມເບີໂທໃຫ້ເດີ່ນ ||||||||||||||||||||||||||||||||||||||||||||||||||
 
 router.delete('/delete/phone', async function(req,res,next){
     const id = req.body.st_id;
@@ -86,7 +86,7 @@ router.delete('/delete/phone', async function(req,res,next){
             res.send(result);
         }
     })
-})
+}) // ລົບເບີໂທເດີ່ນ ||||||||||||||||||||||||||||||||||||||||||||||||||
 
 
 router.put('/edit', async function(req,res,next){
@@ -128,7 +128,7 @@ router.put('/edit', async function(req,res,next){
 
     }
     
-})
+}) // ແກ້ໄຂຂໍ້ມູນເດີ່ນ ||||||||||||||||||||||||||||||||||||||||||||||||||
 
 
 router.delete('/:st_id', async function(req,res,next){
@@ -140,7 +140,7 @@ router.delete('/:st_id', async function(req,res,next){
             res.send(result);
         }
     })
-})
+}) // ລົບເດີ່ນ ||||||||||||||||||||||||||||||||||||||||||||||||||
 
 
 module.exports = router;

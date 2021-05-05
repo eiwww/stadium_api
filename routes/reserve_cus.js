@@ -21,7 +21,7 @@ router.get('/', async function(req,res,next){
             res.send(result);
         }
     })
-})
+}) // ສະແດງລາຍການຈອງລູກຄ້າທີ່ມີບັນຊີ ||||||||||||||||||||||||||||||||||||||||||||||||||
 
 
 router.post('/', async function(req,res,next){
@@ -34,18 +34,18 @@ router.post('/', async function(req,res,next){
     const tid = req.body.td_id;
     const kd = req.body.kickoff_date;
     
-        await db.query("call reserve_cus(?,?,?,?)", [id,stid,cid,th], (err, result) => {
+        await db.query("call reserve_cus(?,?,?,?)", [id,stid,cid,th], (err, result) => { // ເພີ່ມຂໍ້ມູນຈອງຫຼັກ
             if(err){
                 console.log(err);
             }
         })
-        await db.query("call reserve_cus_field(?,?,?,?)", [id,sid,tid,kd], (err1,result1) => {
+        await db.query("call reserve_cus_field(?,?,?,?)", [id,sid,tid,kd], (err1,result1) => { // ເພີ່ມຂໍ້ມູນເດີ່ນທີ່ຈອງ
             if(err1){
                 console.log(err1);
             }
         })
     res.send("Reserve Complete");
-})
+}) // ເຮັດການຈອງໃຫ້ລູກຄ້າທີ່ມີບັນຊີ ||||||||||||||||||||||||||||||||||||||||||||||||||
 
 
 
