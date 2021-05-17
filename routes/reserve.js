@@ -1,3 +1,4 @@
+const e = require('express');
 var express = require('express');
 var router = express.Router();
 
@@ -22,7 +23,7 @@ router.get('/', async function(req,res,next){
     })
 }) // ສະແດງລາຍການຈອງທັງໝົດໃຫ້ຜູ້ໃຊ້ ||||||||||||||||||||||||||||||||||||||||||||||||||
 
-router.post('/', async function(req,res,next){
+router.post('/', async (req,res) => {
     const id = req.body.b_id;
     const stid = req.body.st_id;
     const sid = req.body.su_id;
@@ -36,23 +37,36 @@ router.post('/', async function(req,res,next){
     const tid = req.body.td_id;
     const kd = req.body.kickoff_date;
     
-        await db.query("call reserve_nou(?,?,?,?)", [id,stid,sid,th], (err, result) => {
-            if(err){
-                console.log(err);
+    await db.query("call check_reserve(?,?,?)", [fid,tid,kd], async (err, result) => { // ກວດສອບວ່າມີການຈອງໃນເວລານັ້ນແລ້ວບໍ່
+        if(err){
+            console.log(err);
+        }else{
+            if(result[0][0].rs === 0){
+                await db.query("call reserve_nou(?,?,?,?)", [id,stid,sid,th], (err, result) => {
+                    if(err){
+                        console.log(err);
+                    }
+                }) // ເພີ່ມຂໍ້ມູນການຈອງຫຼັກໂດຍພະນັກງານ
+                await db.query("call reserve_nou_add(?,?,?,?)", [id,nm,tm,tel], (err1, result) => {
+                    if(err1){
+                        console.log(err1);
+                    }
+                }) // ເພີ່ມຂໍ້ມູນຜູ້ໃຊ້ທີ່ບໍ່ມີບັນຊີ
+                await db.query("call reserve_cus_field(?,?,?,?)", [id,fid,tid,kd], (err2,result1) => {
+                    if(err2){
+                        console.log(err2);
+                    }
+                }) // ເພີ່ມຂໍ້ມູນເດີ່ນທີ່ຈອງໂດຍພະນັກງານ
+        
+                res.send("Reserve Complete");
+            }else{
+                res.send("Reserve Fail there are already reserve");
             }
-        }) // ເພີ່ມຂໍ້ມູນການຈອງຫຼັກໂດຍພະນັກງານ
-        await db.query("call reserve_nou_add(?,?,?,?)", [id,nm,tm,tel], (err1, result) => {
-            if(err1){
-                console.log(err1);
-            }
-        }) // ເພີ່ມຂໍ້ມູນຜູ້ໃຊ້ທີ່ບໍ່ມີບັນຊີ
-        await db.query("call reserve_cus_field(?,?,?,?)", [id,fid,tid,kd], (err2,result1) => {
-            if(err2){
-                console.log(err2);
-            }
-        }) // ເພີ່ມຂໍ້ມູນເດີ່ນທີ່ຈອງໂດຍພະນັກງານ
+        }
+        
+    })
 
-    res.send("Reserve Complete");
+        
 }) // ເພີ່ມລາຍການຈອງ ||||||||||||||||||||||||||||||||||||||||||||||||||
 
 

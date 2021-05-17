@@ -24,7 +24,7 @@ router.get('/', async function(req,res,next){
 }) // ສະແດງລາຍການຈອງລູກຄ້າທີ່ມີບັນຊີ ||||||||||||||||||||||||||||||||||||||||||||||||||
 
 
-router.post('/', async function(req,res,next){
+router.post('/', async (req,res) => {
     const id = req.body.b_id;
     const stid = req.body.st_id;
     const cid = req.body.c_id;
@@ -33,18 +33,31 @@ router.post('/', async function(req,res,next){
     const sid = req.body.std_id;
     const tid = req.body.td_id;
     const kd = req.body.kickoff_date;
+
+    await db.query("call check_reserve(?,?,?)", [fid,tid,kd], async (err, result) => { // ກວດສອບວ່າມີການຈອງໃນເວລານັ້ນແລ້ວບໍ່
+        if(err){
+            console.log(err);
+        }else{
+            if(result[0][0].rs === 0){
+                await db.query("call reserve_cus(?,?,?,?)", [id,stid,cid,th], (err, result) => { 
+                    if(err){
+                        console.log(err);
+                    }
+                }) // ເພີ່ມຂໍ້ມູນຈອງຫຼັກ ||||||||||||||||||||||||||||||||||||||||||||||||||
+                await db.query("call reserve_cus_field(?,?,?,?)", [id,sid,tid,kd], (err1,result1) => { 
+                    if(err1){
+                        console.log(err1);
+                    }
+                }) // ເພີ່ມຂໍ້ມູນເດີ່ນທີ່ຈອງ ||||||||||||||||||||||||||||||||||||||||||||||||||
+                res.send("Reserve Complete");
+            }else{
+                res.send("Reserve Fail there are already reserve");
+            }
+        }
+        
+    })
     
-        await db.query("call reserve_cus(?,?,?,?)", [id,stid,cid,th], (err, result) => { // ເພີ່ມຂໍ້ມູນຈອງຫຼັກ
-            if(err){
-                console.log(err);
-            }
-        })
-        await db.query("call reserve_cus_field(?,?,?,?)", [id,sid,tid,kd], (err1,result1) => { // ເພີ່ມຂໍ້ມູນເດີ່ນທີ່ຈອງ
-            if(err1){
-                console.log(err1);
-            }
-        })
-    res.send("Reserve Complete");
+        
 }) // ເຮັດການຈອງໃຫ້ລູກຄ້າທີ່ມີບັນຊີ ||||||||||||||||||||||||||||||||||||||||||||||||||
 
 

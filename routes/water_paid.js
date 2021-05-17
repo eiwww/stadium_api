@@ -13,6 +13,19 @@ const db = mysql.createConnection(dbconfig.db);
 router.get('/', async function(req,res,next){
     const bid = req.body.bp_id;
 
+    await db.query("call water_bill_show(?)", [bid], (err, result) => {
+        if(err){
+            console.log(err);
+        }else{
+            res.send(result);
+        }
+    })
+}) // ລາຍການນໍ້າທັງໝົດຂອງໃບບິນນັ້ນ ||||||||||||||||||||||||||||||||||||||||||||||||||
+
+
+router.get('/wtotal', async function(req,res,next){
+    const bid = req.body.bp_id;
+
     await db.query("call total_water(?)", [bid], (err, result) => {
         if(err){
             console.log(err);
@@ -37,5 +50,18 @@ router.post('/', async function(req,res,next){
     })
 }) // ເພີ່ມລາຍການນໍ້າເຂົ້າໃບບິນ ||||||||||||||||||||||||||||||||||||||||||||||||||
 
+
+router.delete('/', async function(req,res,next){
+    const pid = req.body.bp_id;
+    const wid = req.body.stw_id;
+    
+    await db.query("call water_bill_delete(?,?)" ,[pid,wid], (err, result) => {
+        if(err){
+            console.log(err);
+        }else{
+            res.send(result);
+        }
+    })
+}) // ລົບລາຍການນໍ້າອອກຈາກໃບບິນ ||||||||||||||||||||||||||||||||||||||||||||||||||
 
 module.exports = router;
