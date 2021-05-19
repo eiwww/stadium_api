@@ -8,6 +8,19 @@ router.use(express.json());
 
 const db = mysql.createConnection(dbconfig.db);
 
+
+router.get('/reserve', async function(req,res,next){
+    const id = req.body.st_id;
+    await db.query("call reserve_staff_all(?)", [id], (err, result) => {
+        if(err){
+            console.log(err);
+        }else{
+            res.send(result);
+        }
+    })
+}) // ສະແດງຕາຕະລາງຈອງເດີ່ນທັງໝົດຂອງເດີ່ນນັ້ນໆ ||||||||||||||||||||||||||||||||||||||||||||||||||
+
+
 router.get('/show', async function(req,res,next){
     await db.query("call stadium()", (err, result) => {
         if(err){
