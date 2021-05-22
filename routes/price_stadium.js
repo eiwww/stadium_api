@@ -33,7 +33,7 @@ router.post('/', async function(req ,res, next) {
     })
 }) // ໃສ່ລາຄາເດີ່ນຕາມເວລາ ||||||||||||||||||||||||||||||||||||||||||||||||||
 
-router.delete('/', async function(req, res, next) {
+router.put('/', async function(req, res, next) {
     const sid = req.body.std_id;
     const tid = req.body.td_id;
     const pr = req.body.sp_price;

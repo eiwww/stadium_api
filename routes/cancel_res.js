@@ -8,21 +8,16 @@ router.use(express.json());
 
 const db = mysql.createConnection(dbconfig.db);
 
-// router.get('/', async function(req,res,next){
-//     const id = req.body.b_id;
-//     await db.query("call cancel_reserve(?)", [id], (err, result) => {
-//         if(err){
-//             console.log(err);
-//         }else{
-//             // if(result === 1){
-//             //     res.send("TRUE");
-//             // }else{
-//             //     res.send("False");
-//             // }
-//             res.send(result);
-//         }
-//     })
-// })
+router.get('/:c_id', async function(req,res,next){
+    const id = req.params.c_id;
+    await db.query("call reserve_cus_static(?)", [id], (err, result) => {
+        if(err){
+            console.log(err);
+        }else{
+            res.send(result);
+        }
+    })
+})
 
 
 router.put('/', async (req,res) => {

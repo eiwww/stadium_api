@@ -15,8 +15,9 @@ router.use(cookieParser());
 
 const db = mysql.createConnection(dbconfig.db);
 
-router.get('/', async function(req,res,next) {
-    await db.query("call staff()" ,(err,result) => {
+router.get('/:st_id', async function(req,res,next) {
+    const id = req.params.st_id;
+    await db.query("call staff(?)", [id] ,(err,result) => {
         if(err){
             console.log(err);
         }else{
