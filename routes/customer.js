@@ -21,8 +21,10 @@ const db = mysql.createConnection(dbconfig.db);
 router.get('/', async function(req, res, next) {
     await db.query("call user()", (err, result) => {
         if(err){
+            res.status(400);
             console.log(err);
         }else{
+            res.status(200);
             res.send(result);
         }
     })
@@ -55,11 +57,13 @@ router.post('/login', async (req,res) => {
                 }else{
                     jwt.sign({user:user}, "usecretkey", (er, token) => {
                         res.cookie("access-token", token, { httpOnly: true});
+                        res.status(200);
                         res.json({token});
                     })
                 }
             })
         }else{
+            res.status(400)
             res.send("Wrong Username and Password Combination!");
         }
     })
@@ -70,6 +74,7 @@ router.post('/login/authen',verifyToken, (req, res) => {
         if(err){
             res.sendStatus(403);
         }else{
+            res.status(200);
             res.json({
                 messege: "User Complete",
                 authData
@@ -89,6 +94,7 @@ router.post('/', async (req, res) => {
 
     await db.query("call check_user_email(?)", [email], (err, result) => {
         if(result[0].length > 0){
+            res.status(200)
             res.send("Email Aready used!");
         }else{
             if(!req.files){
@@ -97,6 +103,7 @@ router.post('/', async (req, res) => {
                         if(err){
                             res.status(400).json({ error: err });
                         }else{
+                            res.status(200);
                             res.send("User Complete");
                         }
                     })
@@ -116,6 +123,7 @@ router.post('/', async (req, res) => {
                             if(err){
                                 res.status(400).json({ error: err });
                             }else{
+                                res.status(200);
                                 res.send("User Complete");
                             }
                         })
@@ -138,8 +146,10 @@ router.put('/', async (req, res) => {
     if(!req.files){
         await db.query("call user_update(?,?,?,?,?)", [nm, sn, pf, ph, id], (err, result) => {
             if(err){
+                res.status(400);
                 console.log(err);
             }else{
+                res.status(200)
                 res.send(result)
             }
         })
@@ -155,8 +165,10 @@ router.put('/', async (req, res) => {
 
             db.query("call user_update(?,?,?,?,?)", [nm, sn, im, ph, id], (err, result) => {
                 if(err){
+                    res.status(400)
                     console.log(err);
                 }else{
+                    res.status(200);
                     res.send(result)
                 }
             })
@@ -170,8 +182,10 @@ router.delete('/', async function(req, res, next) {
     const id = req.body.c_id
     await db.query("call user_delete(?)", [id], (err, result) => {
         if(err){
+            res.status(400)
             console.log(err);
         }else{
+            res.status(200);
             res.send(result)
         }
     })

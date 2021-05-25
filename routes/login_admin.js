@@ -21,6 +21,7 @@ router.post('/posts',verifyToken, (req, res) => {
         if(err){
             res.sendStatus(403);
         }else{
+            res.status(200);
             res.json({
                 messege: "Complete",
                 authData
@@ -46,7 +47,7 @@ router.post('/', async (req, res) => {
 
                         jwt.sign({user:user}, "secretkey", (er, token) => {
                             res.cookie("access-token", token, { httpOnly: true });
-                            
+                            res.status(200)
                             res.json({token});
                             // res.cookie("access-token", token, {
                             //     maxAge: 60 * 60 * 24 * 30 * 1000,
@@ -60,6 +61,7 @@ router.post('/', async (req, res) => {
                 // res.send(dpw);
                 
             }else{
+                res.status(400)
                 res.send("Wrong Username and Password Combination!");
             }
         });

@@ -12,8 +12,10 @@ router.get('/', async function(req, res, next) {
     const id = req.body.std_id;
     await db.query("call stadium_price(?)", [id],(err, result) => {
         if(err){
+            res.status(400)
             console.log(err);
         }else{
+            res.status(200)
             res.send(result);
         }
     })
@@ -26,8 +28,10 @@ router.post('/', async function(req ,res, next) {
 
     await db.query("call stadium_price_add(?,?,?)", [sid,tid,pr], (err, result) => {
         if(err){
+            res.status(400)
             console.log(err);
         }else{
+            res.status(200)
             res.send(result);
         }
     })
@@ -40,8 +44,10 @@ router.put('/', async function(req, res, next) {
 
     await db.query("call stadium_price_edit(?,?,?)", [pr,sid,tid], (err, result) => {
         if(err){
+            res.status(400)
             console.log(err);
         }else{
+            res.status(200)
             res.send(result);
         }
     })

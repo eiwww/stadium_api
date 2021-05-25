@@ -16,8 +16,10 @@ const db = mysql.createConnection(dbconfig.db);
 router.get("/", async function (req, res, next) {
   await db.query("call admin()", (err, result) => {
     if (err) {
+      res.status(400)
       console.log(err);
     } else {
+      res.status(200);
       res.send(result);
     }
   });
@@ -37,7 +39,7 @@ router.post("/", async (req, res) => {
 
   await db.query("call check_ad_email(?)", [email], (err,result) => {
     if(result[0].length > 0){
-        
+      res.status(400)
       res.send("Email Already used!");
         
     }else{
@@ -47,6 +49,7 @@ router.post("/", async (req, res) => {
               if (err) {
                 res.status(400).json({ error: err });
               } else {
+                res.status(200)
                 res.send("REGIS COMPLETE");
               }
             }
@@ -66,6 +69,7 @@ router.post("/", async (req, res) => {
                   if (err) {
                     res.status(400).json({ error: err });
                   } else {
+                    res.status(200)
                     res.send("REGIS COMPLETE");
                   }
                 }
@@ -86,8 +90,10 @@ router.put("/", async (req, res) => {
   if(!req.files)
   await db.query("call admin_update(?,?,?)",[nm, pf, id],(err, result) => {
       if (err) {
+        res.status(400)
         console.log(err);
       } else {
+        res.status(200)
         res.send(result);
       }
     }
@@ -103,8 +109,10 @@ router.put("/", async (req, res) => {
 
       db.query("call admin_update(?,?,?)",[nm, im, id],(err, result) => {
         if (err) {
+          res.status(400)
           console.log(err);
         } else {
+          res.status(200)
           res.send(result);
         }
       }
@@ -117,8 +125,10 @@ router.delete("/", async function (req, res, next) {
   const id = req.body.a_id;
   await db.query("call admin_delete(?)", [id], (err, result) => {
     if (err) {
+      res.status(400)
       console.log(err);
     } else {
+      res.status(200)
       res.send(result);
     }
   });

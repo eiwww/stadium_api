@@ -12,8 +12,10 @@ router.get('/:st_id', async function(req,res,next){
     const id = req.params.st_id;
     await db.query("call field(?)", [id] , (err,result) => {
         if(err){
+            res.status(400)
             console.log(err);
         }else{
+            res.status(200)
             res.send(result);
         }
     })
@@ -26,6 +28,7 @@ router.post('/', async function(req, res, next) {
     
 
     if(!req.files){
+        res.status(500)
         res.send("Please choose field image to show");
     }else{
         let sampleFile = req.files.sampleFile;
@@ -38,8 +41,10 @@ router.post('/', async function(req, res, next) {
 
             db.query("call field_add(?,?,?,?)", [id, sid, nm, pf], (err, result) => {
                 if(err){
+                    res.status(400)
                     console.log(err);
                 }else{
+                    res.status(200)
                     res.send(result)
                 }
             })
@@ -59,8 +64,10 @@ router.put('/', async function(req, res, next) {
     if(!req.files){
         db.query("call field_update(?,?,?,?)", [nm, st, pf, id], (err, result) => {
             if(err){
+                res.status(400)
                 console.log(err);
             }else{
+                res.status(200)
                 res.send(result)
             }
         })
@@ -75,8 +82,10 @@ router.put('/', async function(req, res, next) {
 
             db.query("call field_update(?,?,?,?)", [nm, st, pff, id], (err, result) => {
                 if(err){
+                    res.status(400)
                     console.log(err);
                 }else{
+                    res.status(200)
                     res.send(result)
                 }
             })

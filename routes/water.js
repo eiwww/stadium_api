@@ -12,8 +12,10 @@ router.get('/:st_id', async function(req,res,next){
     const id = req.params.st_id;
     await db.query("call water(?)", [id], (err, result) => {
         if(err){
+            res.status(400)
             console.log(err);
         }else{
+            res.status(200)
             res.send(result);
         }
     })
@@ -30,8 +32,10 @@ router.post('/', async function(req,res,next){
     if(!req.files){
         db.query("call water_add(?,?,?,?,?,'ຂາຍໄດ້')", [id,sid,nm,pr,pic], (err, result) => {
             if(err){
+                res.status(400)
                 console.log(err);
             }else{
+                res.status(200)
                 res.send(result);
             }
         })
@@ -46,8 +50,10 @@ router.post('/', async function(req,res,next){
 
             db.query("call water_add(?,?,?,?,?,'ຂາຍໄດ້')", [id,sid,nm,pr,im], (err, result) => {
                 if(err){
+                    res.status(400)
                     console.log(err);
                 }else{
+                    res.status(200)
                     res.send(result);
                 }
             })
@@ -68,8 +74,10 @@ router.put('/', async function(req,res,next){
     if(!req.files){
         db.query("call water_update(?,?,?,?,?)", [nm,pr,pic,stt,id], (err, result) => {
             if(err){
+                res.status(400)
                 console.log(err);
             }else{
+                res.status(200)
                 res.send(result);
             }
         })
@@ -84,8 +92,10 @@ router.put('/', async function(req,res,next){
 
             db.query("call water_update(?,?,?,?,?)", [nm,pr,im,stt,id], (err, result) => {
                 if(err){
+                    res.status(400)
                     console.log(err);
                 }else{
+                    res.status(200)
                     res.send(result);
                 }
             })
@@ -98,8 +108,10 @@ router.delete('/:stw_id', async function(req,res,next){
     const id = req.params.stw_id;
     await db.query("call water_delete(?)", [id], (err, result) => {
         if(err){
+            res.status(400)
             console.log(err);
         }else{
+            res.status(200)
             res.send(result);
         }
     })

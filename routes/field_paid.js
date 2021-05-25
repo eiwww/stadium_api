@@ -15,8 +15,10 @@ router.get('/', async function(req,res,next){
 
     await db.query("call total_field(?)", [bid], (err, result) => {
         if(err){
+            res.status(400)
             console.log(err);
         }else{
+            res.status(200)
             res.send(result);
         }
     })
@@ -30,8 +32,10 @@ router.post('/', async function(req,res,next){
     
     await db.query("call field_paid(?,?,?)" ,[pid,sid,tid], (err, result) => {
         if(err){
+            res.status(400)
             console.log(err);
         }else{
+            res.status(200)
             res.send(result);
         }
     })

@@ -14,8 +14,10 @@ router.get('/', async function(req,res,next){
 
     await db.query("call reserve_staff_all(?)" , [sid], (err,result) => {
         if(err){
+            res.status(400)
             console.log(err);
         }else{
+            res.status(200)
             res.send(result);
         }
     })
@@ -28,8 +30,10 @@ router.post('/', async function(req,res,next){
     
     await db.query("call open_bill(?,?,?)" ,[pid,bid,sid], (err, result) => {
         if(err){
+            res.status(400)
             console.log(err);
         }else{
+            res.status(200)
             res.send(result);
         }
     })
@@ -43,8 +47,10 @@ router.put('/', async function(req,res,next){
     
     await db.query("call close_bill(?,?,?)" ,[wt,st,pid], (err, result) => {
         if(err){
+            res.status(400)
             console.log(err);
         }else{
+            res.status(200)
             res.send(result);
         }
     })

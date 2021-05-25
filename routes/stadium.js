@@ -13,8 +13,10 @@ router.get('/reserve', async function(req,res,next){
     const id = req.body.st_id;
     await db.query("call reserve_staff_all(?)", [id], (err, result) => {
         if(err){
+            res.status(400)
             console.log(err);
         }else{
+            res.status(200)
             res.send(result);
         }
     })
@@ -24,8 +26,10 @@ router.get('/reserve', async function(req,res,next){
 router.get('/show', async function(req,res,next){
     await db.query("call stadium()", (err, result) => {
         if(err){
+            res.status(400)
             console.log(err);
         }else{
+            res.status(200)
             res.send(result);
         }
     })
@@ -35,8 +39,10 @@ router.get('/show/phone', async function(req,res,next){
     const id = req.body.st_id;
     await db.query("call stadium_phone(?)", [id], (err, result) => {
         if(err){
+            res.status(400)
             console.log(err);
         }else{
+            res.status(200)
             res.send(result);
         }
     })
@@ -54,6 +60,7 @@ router.post('/add', async function(req,res,next){
     
 
     if(!req.files){
+        res.status(500)
         res.send("Please choose the image");
     }else{
         let sampleFile = req.files.sampleFile;
@@ -65,8 +72,10 @@ router.post('/add', async function(req,res,next){
             const img = sampleFile.name;
             db.query("call stadium_add(?,?,?,?,?,?,?,?,?)", [id,nm,des,cc,vl,dt,pv,tc,img], (err,result) => {
                 if(err){
+                    res.status(400)
                     console.log(err);
                 }else{
+                    res.status(200)
                     res.send(result);
                 }
             })
@@ -82,8 +91,10 @@ router.post('/add/phone', async function(req,res,next){
     const ph = req.body.st_phone;
     await db.query("call stadium_phone_add(?,?)", [id,ph], (err,result) => {
         if(err){
+            res.status(400)
             console.log(err);
         }else{
+            res.status(200)
             res.send(result);
         }
     })
@@ -94,8 +105,10 @@ router.delete('/delete/phone', async function(req,res,next){
     const ph = req.body.st_phone;
     await db.query("call stadium_phone_delete(?,?)", [id,ph], (err,result) => {
         if(err){
+            res.status(400)
             console.log(err);
         }else{
+            res.status(200)
             res.send(result);
         }
     })
@@ -116,8 +129,10 @@ router.put('/edit', async function(req,res,next){
     if(!req.files){
         db.query("call stadium_update(?,?,?,?,?,?,?,?,?)", [nm,des,vl,dt,pv,tc,img,stt,id], (err,result) => {
             if(err){
+                res.status(400)
                 console.log(err);
             }else{
+                res.status(200)
                 res.send(result);
             }
         })
@@ -132,8 +147,10 @@ router.put('/edit', async function(req,res,next){
             const im = sampleFile.name;
             db.query("call stadium_update(?,?,?,?,?,?,?,?,?)", [nm,des,vl,dt,pv,tc,im,stt,id], (err,result) => {
                 if(err){
+                    res.status(400)
                     console.log(err);
                 }else{
+                    res.status(200)
                     res.send(result);
                 }
             })
@@ -148,8 +165,10 @@ router.delete('/:st_id', async function(req,res,next){
     const id = req.params.st_id;
     await db.query("call stadium_delete(?)", [id], (err,result) => {
         if(err){
+            res.status(400)
             console.log(err);
         }else{
+            res.status(200)
             res.send(result);
         }
     })

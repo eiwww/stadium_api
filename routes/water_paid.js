@@ -15,8 +15,10 @@ router.get('/', async function(req,res,next){
 
     await db.query("call water_bill_show(?)", [bid], (err, result) => {
         if(err){
+            res.status(400)
             console.log(err);
         }else{
+            res.status(200)
             res.send(result);
         }
     })
@@ -28,8 +30,10 @@ router.get('/wtotal', async function(req,res,next){
 
     await db.query("call total_water(?)", [bid], (err, result) => {
         if(err){
+            res.status(400)
             console.log(err);
         }else{
+            res.status(200)
             res.send(result);
         }
     })
@@ -43,8 +47,10 @@ router.post('/', async function(req,res,next){
     
     await db.query("call water_bill(?,?,?)" ,[pid,wid,qty], (err, result) => {
         if(err){
+            res.status(400)
             console.log(err);
         }else{
+            res.status(200)
             res.send(result);
         }
     })
@@ -57,8 +63,10 @@ router.delete('/', async function(req,res,next){
     
     await db.query("call water_bill_delete(?,?)" ,[pid,wid], (err, result) => {
         if(err){
+            res.status(400)
             console.log(err);
         }else{
+            res.status(200)
             res.send(result);
         }
     })

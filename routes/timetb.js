@@ -11,8 +11,10 @@ const db = mysql.createConnection(dbconfig.db);
 router.get('/', async function(req, res, next) {
     await db.query("call time_table()", (err, result) => {
         if(err){
+            res.status(400)
             console.log(err);
         }else{
+            res.status(200)
             res.send(result);
         }
     })

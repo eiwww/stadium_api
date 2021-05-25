@@ -19,8 +19,10 @@ router.get('/:st_id', async function(req,res,next) {
     const id = req.params.st_id;
     await db.query("call staff(?)", [id] ,(err,result) => {
         if(err){
+            res.status(400)
             console.log(err);
         }else{
+            res.status(200)
             res.send(result);
         }
     })
@@ -55,11 +57,13 @@ router.post('/login', async(req, res) => {
                 }else{
                     jwt.sign({user:staff}, "ssecretkey", (er, token) => {
                         res.cookie("access-token", token, {httpOnly:true});
+                        res.status(200)
                         res.json({token});
                     })
                 }
             })
         }else{
+            res.status(400)
             res.send("Wrong Username and Password Combination!");
         }
     })
@@ -68,8 +72,9 @@ router.post('/login', async(req, res) => {
 router.post('/login/authen',verifyToken, (req, res) => {
     jwt.verify(req.token, "ssecretkey", (err, authData) => {
         if(err){
-            res.sendStatus(400);
+            res.sendStatus(403);
         }else{
+            res.status(200)
             res.json({message: "Staff Complete", authData});
         }
     })
@@ -88,6 +93,7 @@ router.post('/', async function(req,res,next) {
 
     await db.query("call check_staff_email(?)", [em], (err,result) => {
         if(result[0].length > 0){
+            res.status(400)
             res.send("Email Already used!");
         }else{
             if(!req.files){
@@ -96,6 +102,7 @@ router.post('/', async function(req,res,next) {
                         if(err){
                             res.status(400).json({ error: err });
                         }else{
+                            res.Status(200)
                             res.send("Staff Complete");
                         }
                     })
@@ -115,6 +122,7 @@ router.post('/', async function(req,res,next) {
                             if(err){
                                 res.status(400).json({ error: err });
                             }else{
+                                res.status(200)
                                 res.send("Staff Complete");
                             }
                         })
@@ -139,8 +147,10 @@ router.put('/', async function(req,res,next) {
     if(!req.files){
         db.query("call staff_update(?,?,?,?,?,?)" , [name,sn,age,img,stt,id],(err,result) => {
             if(err){
+                res.status(400)
                 console.log(err);
             }else{
+                res.status(200)
                 res.send(result);
             }
         })
@@ -155,8 +165,10 @@ router.put('/', async function(req,res,next) {
 
              db.query("call staff_update(?,?,?,?,?,?)", [name,sn,age,im,stt,id],(err,result) => {
                 if(err){
+                    res.status(400)
                     console.log(err);
                 }else{
+                    res.status(200)
                     res.send(result);
                 }
             })
@@ -169,8 +181,10 @@ router.delete('/', async function(req,res,next) {
     const is = req.body.su_id;
     await db.query("call staff_delete(?)", [id], (err,result) => {
         if(err){
+            res.status(400)
             console.log(err);
         }else{
+            res.status(200)
             res.send(result);
         }
     })

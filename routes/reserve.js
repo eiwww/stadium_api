@@ -16,8 +16,10 @@ const db = mysql.createConnection(dbconfig.db);
 router.get('/', async function(req,res,next){
     await db.query("call reserve_all()", (err, result) => {
         if(err){
+            res.status(400)
             console.log(err);
         }else{
+            res.status(200)
             res.send(result);
         }
     })
@@ -39,27 +41,33 @@ router.post('/', async (req,res) => {
     
     await db.query("call check_reserve(?,?,?)", [fid,tid,kd], async (err, result) => { // ກວດສອບວ່າມີການຈອງໃນເວລານັ້ນແລ້ວບໍ່
         if(err){
+            res.status(400)
             console.log(err);
         }else{
+            
             if(result[0][0].rs === 0){
                 await db.query("call reserve_nou(?,?,?,?)", [id,stid,sid,th], (err, result) => {
                     if(err){
+                        res.status(400)
                         console.log(err);
                     }
                 }) // ເພີ່ມຂໍ້ມູນການຈອງຫຼັກໂດຍພະນັກງານ
                 await db.query("call reserve_nou_add(?,?,?,?)", [id,nm,tm,tel], (err1, result) => {
                     if(err1){
+                        res.status(400)
                         console.log(err1);
                     }
                 }) // ເພີ່ມຂໍ້ມູນຜູ້ໃຊ້ທີ່ບໍ່ມີບັນຊີ
                 await db.query("call reserve_cus_field(?,?,?,?)", [id,fid,tid,kd], (err2,result1) => {
                     if(err2){
+                        res.status(400)
                         console.log(err2);
                     }
                 }) // ເພີ່ມຂໍ້ມູນເດີ່ນທີ່ຈອງໂດຍພະນັກງານ
-        
+                res.status(200)
                 res.send("Reserve Complete");
             }else{
+                res.status(400)
                 res.send("Reserve Fail there are already reserve");
             }
         }

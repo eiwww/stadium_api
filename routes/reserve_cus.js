@@ -16,8 +16,10 @@ const db = mysql.createConnection(dbconfig.db);
 router.get('/', async function(req,res,next){
     await db.query("call reserve_cus_show()", (err, result) => {
         if(err){
+            res.status(400)
             console.log(err);
         }else{
+            res.status(200)
             res.send(result);
         }
     })
@@ -36,21 +38,26 @@ router.post('/', async (req,res) => {
 
     await db.query("call check_reserve(?,?,?)", [fid,tid,kd], async (err, result) => { // ກວດສອບວ່າມີການຈອງໃນເວລານັ້ນແລ້ວບໍ່
         if(err){
+            res.status(400)
             console.log(err);
         }else{
             if(result[0][0].rs === 0){
                 await db.query("call reserve_cus(?,?,?,?)", [id,stid,cid,th], (err, result) => { 
                     if(err){
+                        res.status(400)
                         console.log(err);
                     }
                 }) // ເພີ່ມຂໍ້ມູນຈອງຫຼັກ ||||||||||||||||||||||||||||||||||||||||||||||||||
                 await db.query("call reserve_cus_field(?,?,?,?)", [id,sid,tid,kd], (err1,result1) => { 
                     if(err1){
+                        res.status(400)
                         console.log(err1);
                     }
                 }) // ເພີ່ມຂໍ້ມູນເດີ່ນທີ່ຈອງ ||||||||||||||||||||||||||||||||||||||||||||||||||
+                res.status(200)
                 res.send("Reserve Complete");
             }else{
+                res.status(400)
                 res.send("Reserve Fail there are already reserve");
             }
         }
