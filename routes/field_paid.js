@@ -10,7 +10,7 @@ router.use(express.json());
 const db = mysql.createConnection(dbconfig.db);
 
 
-router.get('/', async function(req,res,next){
+router.get('/ftotal', async function(req,res,next){
     const bid = req.body.bp_id;
 
     await db.query("call total_field(?)", [bid], (err, result) => {
@@ -23,6 +23,37 @@ router.get('/', async function(req,res,next){
         }
     })
 }) // ລວມລາຄາເດີ່ນໃນໃບບິນນັ້ນ ||||||||||||||||||||||||||||||||||||||||||||||||||
+
+
+router.get('/field', async function(req,res,next){
+    const bid = req.body.b_id;
+
+    await db.query("call field_booking_show(?)" , [bid], (err,result) => {
+        if(err){
+            res.status(400)
+            console.log(err);
+        }else{
+            res.status(200)
+            res.send(result);
+        }
+    })
+}) // ສະແດງລາຍການເດີ່ນທີ່ຢູ່ໃນການຈອງນັ້ນ ||||||||||||||||||||||||||||||||||||||||||||||||||
+
+
+router.get('/bfield', async function(req,res,next){
+    const bid = req.body.bp_id;
+
+    await db.query("call field_bill_show(?)" , [bid], (err,result) => {
+        if(err){
+            res.status(400)
+            console.log(err);
+        }else{
+            res.status(200)
+            res.send(result);
+        }
+    })
+}) // ສະແດງລາຍການເດີ່ນທີ່ຢູ່ໃນໃບບິນນັ້ນ ||||||||||||||||||||||||||||||||||||||||||||||||||
+
 
 
 router.post('/', async function(req,res,next){
@@ -39,7 +70,23 @@ router.post('/', async function(req,res,next){
             res.send(result);
         }
     })
-}) // ເພີ່ມລາຄາເດີ່ນເຂົ້າໃນໃບບິນ ||||||||||||||||||||||||||||||||||||||||||||||||||
+}) // ເພີ່ມເດີ່ນເຂົ້າໃນໃບບິນ ||||||||||||||||||||||||||||||||||||||||||||||||||
+
+
+router.delete('/', async function(req,res,next){
+    const pid = req.body.bp_id;
+    const sid = req.body.std_id;
+    
+    await db.query("call field_bill_delete(?,?)" ,[pid,sid], (err, result) => {
+        if(err){
+            res.status(400)
+            console.log(err);
+        }else{
+            res.status(200)
+            res.send(result);
+        }
+    })
+})  // ລົບເດີ່ນໃນໃບບິນນັ້ນ ||||||||||||||||||||||||||||||||||||||||||||||||||
 
 
 module.exports = router;

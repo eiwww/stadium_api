@@ -26,28 +26,40 @@ router.get('/', async function(req,res,next){
 }) // ສະແດງລາຍການຈອງລູກຄ້າທີ່ມີບັນຊີ ||||||||||||||||||||||||||||||||||||||||||||||||||
 
 
-router.post('/', async (req,res) => {
+router.post('/booking', async (req,res) => {
     const id = req.body.b_id;
     const stid = req.body.st_id;
     const cid = req.body.c_id;
     const th = req.body.time;
+    
+    await db.query("call reserve_cus(?,?,?,?)", [id,stid,cid,th], (err, result) => { 
+        if(err){
+            res.status(400)
+            console.log(err);
+        }
+    }) // ເພີ່ມຂໍ້ມູນການຈອງຫຼັກໂດຍຜູ້ໃຊ້ ||||||||||||||||||||||||||||||||||||||||||||||||||
+
+    res.status(200)
+    res.send("Reserving");
+
+}) // ເພີ່ມລາຍການຈອງ ||||||||||||||||||||||||||||||||||||||||||||||||||
+
+
+
+router.post('/bookingfield', async (req,res) => {
+    const id = req.body.b_id;
 
     const sid = req.body.std_id;
     const tid = req.body.td_id;
     const kd = req.body.kickoff_date;
 
-    await db.query("call check_reserve(?,?,?)", [fid,tid,kd], async (err, result) => { // ກວດສອບວ່າມີການຈອງໃນເວລານັ້ນແລ້ວບໍ່
+    await db.query("call check_reserve(?,?,?)", [sid,tid,kd], async (err, result) => { // ກວດສອບວ່າມີການຈອງໃນເວລານັ້ນແລ້ວບໍ່
         if(err){
             res.status(400)
             console.log(err);
         }else{
             if(result[0][0].rs === 0){
-                await db.query("call reserve_cus(?,?,?,?)", [id,stid,cid,th], (err, result) => { 
-                    if(err){
-                        res.status(400)
-                        console.log(err);
-                    }
-                }) // ເພີ່ມຂໍ້ມູນຈອງຫຼັກ ||||||||||||||||||||||||||||||||||||||||||||||||||
+                
                 await db.query("call reserve_cus_field(?,?,?,?)", [id,sid,tid,kd], (err1,result1) => { 
                     if(err1){
                         res.status(400)

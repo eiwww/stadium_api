@@ -9,7 +9,7 @@ router.use(express.json());
 
 const db = mysql.createConnection(dbconfig.db);
 
-router.get('/', async function(req,res,next){
+router.get('/all', async function(req,res,next){
     const sid = req.body.st_id;
 
     await db.query("call reserve_staff_all(?)" , [sid], (err,result) => {
