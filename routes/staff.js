@@ -47,7 +47,7 @@ router.post('/login', async(req, res) => {
     await db.query("call check_staff_email(?)", [em], (err,result) => {
         if(result[0].length > 0){
             const dpw = result[0][0].su_password;
-            const staff = result[0];
+            const staff = result[0][0].status;
 
             bcrypt.compare(pw,dpw).then((match) => {
                 if(!match){
@@ -55,7 +55,7 @@ router.post('/login', async(req, res) => {
                         .status(400)
                         .send({ error: "Wrong Username and Password Combination!" });
                 }else{
-                    jwt.sign({user:staff}, "ssecretkey", (er, token) => {
+                    jwt.sign({data:result[0][0].su_id,role:result[0][0].status}, "secret", (er, token) => {
                         res.cookie("access-token", token, {httpOnly:true});
                         res.status(200)
                         res.json({token});

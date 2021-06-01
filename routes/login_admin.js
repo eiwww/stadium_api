@@ -7,7 +7,7 @@ const dbconfig = require('../dbConnect/dbconnect');
 const bcrypt = require('bcrypt');
 const cookieParser = require('cookie-parser');
 const cors=require('cors');
-//const { createTokens, validateToken } = require("../middleware/JWT");
+const aut = require("../middleware/admin-JWT");
 const jwt = require("jsonwebtoken");
 
 router.use(express.json());
@@ -16,37 +16,39 @@ router.use(cors());
 
 const db = mysql.createConnection(dbconfig.db);
 
-router.post('/posts',verifyToken, (req, res) => {
-    jwt.verify(req.token, "secretkey", (err, authData) => {
+router.get('/userlogin',verifyToken, (req, res) => {
+    jwt.verify(req.token, "secret",async (err, authData) => {
         if(err){
             res.sendStatus(403);
         }else{
-            res.status(200);
-            res.json({
-                messege: "Complete",
-                authData
+            const user_id = authData.data;
+            await db.query("call admin_user_login(?)", [user_id], (er, result) => {
+                if(er){
+                    console.log(er);
+                }else{
+                    res.send(result);
+                }
             })
         }
     })
-}) //ແປງ token ເປັນຂໍ້ມູນສົ່ງໄປ ||||||||||||||||||||||||||||||||||||||||||||||||||
+}) //ແປງ token ເອົາໄອດີ admin ໄປ select ເອົາຂໍ້ມູນໄປສະແດງຢູ່ front end ||||||||||||||||||||||||||||||||||||||||||||||||||
 
 router.post('/', async (req, res) => {
     const email = req.body.a_email;
-    const pw = req.body.a_password;
+    const password = req.body.a_password;
     
         await db.query("call check_ad_email(?)", [email], (err,result) => {
             if(result[0].length > 0){
-                const dpw = result[0][0].a_password;
-                const user = result[0];
-                bcrypt.compare(pw,dpw).then((match) => {
+                const database_pw = result[0][0].a_password;
+                bcrypt.compare(password,database_pw).then((match) => {
                     if(!match){
                         res
                             .status(400)
                             .send({ error: "Wrong Username and Password Combination!" });
                     }else{
 
-                        jwt.sign({user:user}, "secretkey", (er, token) => {
-                            res.cookie("access-token", token, { httpOnly: true });
+                        jwt.sign({data:result[0][0].a_id, role:'admin'}, "secret", (er, token) => {
+                            //res.cookie("access-token", token, { httpOnly: true });
                             res.status(200)
                             res.json({token});
                             // res.cookie("access-token", token, {

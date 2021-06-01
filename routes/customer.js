@@ -9,6 +9,8 @@ const cookieParser = require('cookie-parser');
 const cors=require('cors');
 const jwt = require("jsonwebtoken");
 
+const aut = require('../middleware/admin-JWT')
+
 router.use(express.static('public'));
 router.use(express.static('upload'));
 
@@ -18,7 +20,7 @@ router.use(cors());
 
 const db = mysql.createConnection(dbconfig.db);
 
-router.get('/', async function(req, res, next) {
+router.get('/', aut, async function(req, res, next) {
     await db.query("call user()", (err, result) => {
         if(err){
             res.status(400);
@@ -39,26 +41,28 @@ function verifyToken(req, res, next) {
     }else{
         res.sendStatus(403); //forbidden
     }
-}
+} //ແປງ Token ເປັນ data
 
 router.post('/login', async (req,res) => {
     const email = req.body.c_email;
-    const pw = req.body.c_password;
+    const password = req.body.c_password;
     
     await db.query("call check_user_email(?)", [email], (err, result) => {
         if(result[0].length > 0){
-            const dpw = result[0][0].c_password;
-            const user = result[0];
-            bcrypt.compare(pw, dpw).then((match) => {
+            const database_pw = result[0][0].c_password;
+            //const user = {data:result[0][0].c_id,role:'user'};
+            bcrypt.compare(password, database_pw).then((match) => {
                 if(!match){
                     res
                         .status(400)
                         .send({ error: "Wrong Username and Password Combination!" });
                 }else{
-                    jwt.sign({user:user}, "usecretkey", (er, token) => {
-                        res.cookie("access-token", token, { httpOnly: true});
+                    jwt.sign({data:result[0][0].c_id,role:'user'}, "secret", (er, token) => {
+                        if(er) return res.status(404).json({er})
+                        //res.cookie("access-token", token, { httpOnly: true});
                         res.status(200);
                         res.json({token});
+                        //localStorage.setItem('user', JSON.stringify(token));
                     })
                 }
             })
@@ -69,19 +73,40 @@ router.post('/login', async (req,res) => {
     })
 }) // ກວດສອບຕອນລ໊ອກອິນ ພ້ອມສົ່ງຄ່າ token ||||||||||||||||||||||||||||||||||||||||||||||||||
 
-router.post('/login/authen',verifyToken, (req, res) => {
-    jwt.verify(req.token, "usecretkey", (err, authData) => {
+router.get('/login/user',verifyToken, (req, res) => {
+    jwt.verify(req.token, "secret", async (err, authData) => {
         if(err){
             res.sendStatus(403);
         }else{
-            res.status(200);
-            res.json({
-                messege: "User Complete",
-                authData
+            const user_id = authData.data;
+            await db.query("call user_user_login(?)", [user_id], (er, result) => {
+                if(er){
+                    console.log(er);
+                }else{
+                    res.send(result);
+                }
             })
         }
     })
-}) // authen ດຶງຄ່າ ຈາກ token ||||||||||||||||||||||||||||||||||||||||||||||||||
+}) //ແປງ token ເອົາໄອດີ customer ໄປ select ເອົາຂໍ້ມູນໄປສະແດງຢູ່ front end ||||||||||||||||||||||||||||||||||||||||||||||||||
+
+
+router.get('/login/follow',verifyToken, (req, res) => {
+    jwt.verify(req.token, "secret", async (err, authData) => {
+        if(err){
+            res.sendStatus(403);
+        }else{
+            const user_id = authData.data;
+            await db.query("call user_following(?)", [user_id], (er, result) => {
+                if(er){
+                    console.log(er);
+                }else{
+                    res.send(result);
+                }
+            })
+        }
+    })
+}) //ແປງ token ເອົາໄອດີ customer ໄປ select ເອົາຂໍ້ມູນການ ຕິດຕາມສະໜາມໄປສະແດງຢູ່ front end ||||||||||||||||||||||||||||||||||||||||||||||||||
 
 
 router.post('/', async (req, res) => {

@@ -5,6 +5,7 @@ const mysql = require("mysql");
 const dbconfig = require("../dbConnect/dbconnect");
 
 const bcrypt = require("bcrypt");
+const aut = require("../middleware/admin-JWT")
 
 router.use(express.json());
 
@@ -13,7 +14,7 @@ router.use(express.static('upload'));
 
 const db = mysql.createConnection(dbconfig.db);
 
-router.get("/", async function (req, res, next) {
+router.get("/",aut, async function (req, res, next) {
   await db.query("call admin()", (err, result) => {
     if (err) {
       res.status(400)
@@ -28,7 +29,7 @@ router.get("/", async function (req, res, next) {
 
 
 
-router.post("/", async (req, res) => {
+router.post("/", aut, async (req, res) => {
 
 
   const email = req.body.a_email;
@@ -83,7 +84,7 @@ router.post("/", async (req, res) => {
 
 }); //ເພີ່ມເຈົ້າຂອງລະບົບ ||||||||||||||||||||||||||||||||||||||||||||||||||
 
-router.put("/", async (req, res) => {
+router.put("/", aut, async (req, res) => {
   const id = req.body.a_id;
   const nm = req.body.a_name;
   const pf = req.body.a_img;
@@ -121,7 +122,7 @@ router.put("/", async (req, res) => {
   }
 }); //ແກ້ໄຂເຈົ້າຂອງລະບົບ ||||||||||||||||||||||||||||||||||||||||||||||||||
 
-router.delete("/", async function (req, res, next) {
+router.delete("/",aut, async function (req, res, next) {
   const id = req.body.a_id;
   await db.query("call admin_delete(?)", [id], (err, result) => {
     if (err) {

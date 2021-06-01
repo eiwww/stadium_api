@@ -9,8 +9,8 @@ router.use(express.json());
 const db = mysql.createConnection(dbconfig.db);
 
 router.get('/:c_id', async function(req,res,next){
-    const id = req.params.c_id;
-    await db.query("call reserve_cus_static(?)", [id], (err, result) => {
+    const customer_id = req.params.c_id;
+    await db.query("call reserve_cus_static(?)", [customer_id], (err, result) => {
         if(err){
             res.status(400)
             console.log(err);

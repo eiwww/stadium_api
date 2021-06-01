@@ -63,21 +63,31 @@ router.post('/add', async function(req,res,next){
         res.status(500)
         res.send("Please choose the image");
     }else{
+
+        let logo = req.files.logo;
+        let uploadlogo = "./upload/stadium/" + logo.name;
+
         let sampleFile = req.files.sampleFile;
         let uploadPath = "./upload/stadium/" + sampleFile.name;
 
-        sampleFile.mv(uploadPath, function(err){
+         logo.mv(uploadlogo,function(err){
             if(err) return res.status(500).send(err);
 
-            const img = sampleFile.name;
-            db.query("call stadium_add(?,?,?,?,?,?,?,?,?)", [id,nm,des,cc,vl,dt,pv,tc,img], (err,result) => {
-                if(err){
-                    res.status(400)
-                    console.log(err);
-                }else{
-                    res.status(200)
-                    res.send(result);
-                }
+            const lg = logo.name;
+
+             sampleFile.mv(uploadPath, function(err){
+                if(err) return res.status(500).send(err);
+    
+                const img = sampleFile.name;
+                 db.query("call stadium_add(?,?,?,?,?,?,?,?,?,?)", [id,nm,des,cc,vl,dt,pv,tc,lg,img], (err,result) => {
+                    if(err){
+                        res.status(400)
+                        console.log(err);
+                    }else{
+                        res.status(200)
+                        res.send(result);
+                    }
+                })
             })
         })
         
@@ -123,11 +133,12 @@ router.put('/edit', async function(req,res,next){
     const dt = req.body.district;
     const pv = req.body.province;
     const tc = req.body.time_cancelbooking;
+    const lgp = req.body.logo_pic;
     const img = req.body.picture;
     const stt = req.body.status;
 
     if(!req.files){
-        db.query("call stadium_update(?,?,?,?,?,?,?,?,?)", [nm,des,vl,dt,pv,tc,img,stt,id], (err,result) => {
+        db.query("call stadium_update(?,?,?,?,?,?,?,?,?,?)", [nm,des,vl,dt,pv,tc,lgp,img,stt,id], (err,result) => {
             if(err){
                 res.status(400)
                 console.log(err);
@@ -137,24 +148,33 @@ router.put('/edit', async function(req,res,next){
             }
         })
     }else{
+        let logo = req.files.logo;
+        let uploadlogo = "./upload/stadium/" + logo.name;
         
         let sampleFile = req.files.sampleFile;
         let uploadPath = "./upload/stadium/"+sampleFile.name;
 
-        sampleFile.mv(uploadPath, function(err){
+        logo.mv(uploadlogo,function(err){
             if(err) return res.status(500).send(err);
 
-            const im = sampleFile.name;
-            db.query("call stadium_update(?,?,?,?,?,?,?,?,?)", [nm,des,vl,dt,pv,tc,im,stt,id], (err,result) => {
-                if(err){
-                    res.status(400)
-                    console.log(err);
-                }else{
-                    res.status(200)
-                    res.send(result);
-                }
+            const lg = logo.name;
+
+            sampleFile.mv(uploadPath, function(err){
+                if(err) return res.status(500).send(err);
+    
+                const im = sampleFile.name;
+                db.query("call stadium_update(?,?,?,?,?,?,?,?,?,?)", [nm,des,vl,dt,pv,tc,lg,im,stt,id], (err,result) => {
+                    if(err){
+                        res.status(400)
+                        console.log(err);
+                    }else{
+                        res.status(200)
+                        res.send(result);
+                    }
+                })
             })
         })
+        
 
     }
     
