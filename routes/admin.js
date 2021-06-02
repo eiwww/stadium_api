@@ -33,8 +33,8 @@ router.post("/", aut, async (req, res) => {
 
 
   const email = req.body.a_email;
-  const pw = req.body.a_password;
-  const nm = req.body.a_name;
+  const password = req.body.a_password;
+  const name = req.body.a_name;
   const img = 'default.jpg';
 
 
@@ -45,8 +45,8 @@ router.post("/", aut, async (req, res) => {
         
     }else{
       if(!req.files){
-        bcrypt.hash(pw, 10).then((hash) => {
-          db.query("call admin_add('',?,?,?,?)",[email, hash, nm, img],(err, result) => {
+        bcrypt.hash(password, 10).then((hash) => {
+          db.query("call admin_add('',?,?,?,?)",[email, hash, name, img],(err, result) => {
               if (err) {
                 res.status(400).json({ error: err });
               } else {
@@ -65,8 +65,8 @@ router.post("/", aut, async (req, res) => {
 
             const im = sampleFile.name;
 
-            bcrypt.hash(pw, 10).then((hash) => {
-              db.query("call admin_add('',?,?,?,?)",[email, hash, nm, im],(err, result) => {
+            bcrypt.hash(password, 10).then((hash) => {
+              db.query("call admin_add('',?,?,?,?)",[email, hash, name, im],(err, result) => {
                   if (err) {
                     res.status(400).json({ error: err });
                   } else {
@@ -85,11 +85,11 @@ router.post("/", aut, async (req, res) => {
 }); //ເພີ່ມເຈົ້າຂອງລະບົບ ||||||||||||||||||||||||||||||||||||||||||||||||||
 
 router.put("/", aut, async (req, res) => {
-  const id = req.body.a_id;
-  const nm = req.body.a_name;
-  const pf = req.body.a_img;
+  const admin_id = req.body.a_id;
+  const name = req.body.a_name;
+  const profile = req.body.a_img;
   if(!req.files)
-  await db.query("call admin_update(?,?,?)",[nm, pf, id],(err, result) => {
+  await db.query("call admin_update(?,?,?)",[name, profile, admin_id],(err, result) => {
       if (err) {
         res.status(400)
         console.log(err);
@@ -108,7 +108,7 @@ router.put("/", aut, async (req, res) => {
 
       const im = sampleFile.name;
 
-      db.query("call admin_update(?,?,?)",[nm, im, id],(err, result) => {
+      db.query("call admin_update(?,?,?)",[name, im, admin_id],(err, result) => {
         if (err) {
           res.status(400)
           console.log(err);
@@ -123,8 +123,8 @@ router.put("/", aut, async (req, res) => {
 }); //ແກ້ໄຂເຈົ້າຂອງລະບົບ ||||||||||||||||||||||||||||||||||||||||||||||||||
 
 router.delete("/",aut, async function (req, res, next) {
-  const id = req.body.a_id;
-  await db.query("call admin_delete(?)", [id], (err, result) => {
+  const admin_id = req.body.a_id;
+  await db.query("call admin_delete(?)", [admin_id], (err, result) => {
     if (err) {
       res.status(400)
       console.log(err);

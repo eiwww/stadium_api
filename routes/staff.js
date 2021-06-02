@@ -16,8 +16,8 @@ router.use(cookieParser());
 const db = mysql.createConnection(dbconfig.db);
 
 router.get('/:st_id', async function(req,res,next) {
-    const id = req.params.st_id;
-    await db.query("call staff(?)", [id] ,(err,result) => {
+    const stadium_id = req.params.st_id;
+    await db.query("call staff(?)", [stadium_id] ,(err,result) => {
         if(err){
             res.status(400)
             console.log(err);
@@ -41,15 +41,15 @@ function verifyToken(req, res, next) {
 
 
 router.post('/login', async(req, res) => {
-    const em = req.body.su_email;
-    const pw = req.body.su_password;
+    const staff_email = req.body.su_email;
+    const staff_password = req.body.su_password;
 
-    await db.query("call check_staff_email(?)", [em], (err,result) => {
+    await db.query("call check_staff_email(?)", [staff_email], (err,result) => {
         if(result[0].length > 0){
-            const dpw = result[0][0].su_password;
-            const staff = result[0][0].status;
+            const database_password = result[0][0].su_password;
+            //const staff_role = result[0][0].status;
 
-            bcrypt.compare(pw,dpw).then((match) => {
+            bcrypt.compare(staff_password,database_password).then((match) => {
                 if(!match){
                     res
                         .status(400)
@@ -82,23 +82,23 @@ router.post('/login/authen',verifyToken, (req, res) => {
 
 
 router.post('/', async function(req,res,next) {
-    const stid = req.body.st_id;
-    const name = req.body.su_name;
-    const sn = req.body.su_surname;
-    const age = req.body.su_age;
-    const stt = req.body.status;
-    const em = req.body.su_email;
-    const pw = req.body.su_password;
+    const stadium_id = req.body.st_id;
+    const staff_name = req.body.su_name;
+    const staff_surname = req.body.su_surname;
+    const staff_age = req.body.su_age;
+    const staff_status = req.body.status;
+    const staff_email = req.body.su_email;
+    const staff_password = req.body.su_password;
     const img = "defualt.jpg";
 
-    await db.query("call check_staff_email(?)", [em], (err,result) => {
+    await db.query("call check_staff_email(?)", [staff_email], (err,result) => {
         if(result[0].length > 0){
             res.status(400)
             res.send("Email Already used!");
         }else{
             if(!req.files){
-                bcrypt.hash(pw, 10).then((hash) => {
-                    db.query("call staff_add(?,?,?,?,?,?,?,?)" , [stid,name,sn,age,em,hash,img,stt],(err,result) => {
+                bcrypt.hash(staff_password, 10).then((hash) => {
+                    db.query("call staff_add(?,?,?,?,?,?,?,?)" , [stadium_id,staff_name,staff_surname,staff_age,staff_email,hash,img,staff_status],(err,result) => {
                         if(err){
                             res.status(400).json({ error: err });
                         }else{
@@ -117,8 +117,8 @@ router.post('/', async function(req,res,next) {
 
                     const im = sampleFile.name;
 
-                    bcrypt.hash(pw, 10).then((hash) => {
-                        db.query("call staff_add(?,?,?,?,?,?,?,?)" , [stid,name,sn,age,em,hash,im,stt],(err,result) => {
+                    bcrypt.hash(staff_password, 10).then((hash) => {
+                        db.query("call staff_add(?,?,?,?,?,?,?,?)" , [stadium_id,staff_name,staff_surname,staff_age,staff_email,hash,im,staff_status],(err,result) => {
                             if(err){
                                 res.status(400).json({ error: err });
                             }else{
@@ -137,15 +137,15 @@ router.post('/', async function(req,res,next) {
 }) // ເພີ່ມພະນັກງານຂອງເດີ່ນ ||||||||||||||||||||||||||||||||||||||||||||||||||
 
 router.put('/', async function(req,res,next) {
-    const id = req.body.su_id;
-    const name = req.body.su_name;
-    const sn = req.body.su_surname;
-    const age = req.body.su_age;
+    const staff_id = req.body.su_id;
+    const staff_name = req.body.su_name;
+    const staff_surname = req.body.su_surname;
+    const staff_age = req.body.su_age;
     const img = req.body.picture;
-    const stt = req.body.status;
+    const staff_status = req.body.status;
 
     if(!req.files){
-        db.query("call staff_update(?,?,?,?,?,?)" , [name,sn,age,img,stt,id],(err,result) => {
+        db.query("call staff_update(?,?,?,?,?,?)" , [staff_name,staff_surname,staff_age,img,staff_status,staff_id],(err,result) => {
             if(err){
                 res.status(400)
                 console.log(err);
@@ -163,7 +163,7 @@ router.put('/', async function(req,res,next) {
 
              const im = sampleFile.name;
 
-             db.query("call staff_update(?,?,?,?,?,?)", [name,sn,age,im,stt,id],(err,result) => {
+             db.query("call staff_update(?,?,?,?,?,?)", [staff_name,staff_surname,staff_age,im,staff_status,staff_id],(err,result) => {
                 if(err){
                     res.status(400)
                     console.log(err);
@@ -178,8 +178,8 @@ router.put('/', async function(req,res,next) {
 }) // ແກ້ໄຂຂໍ້ມູນພະນັກງານເດີ່ນ ||||||||||||||||||||||||||||||||||||||||||||||||||
 
 router.delete('/', async function(req,res,next) {
-    const is = req.body.su_id;
-    await db.query("call staff_delete(?)", [id], (err,result) => {
+    const staff_id = req.body.su_id;
+    await db.query("call staff_delete(?)", [staff_id], (err,result) => {
         if(err){
             res.status(400)
             console.log(err);

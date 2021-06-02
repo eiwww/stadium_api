@@ -11,9 +11,9 @@ const db = mysql.createConnection(dbconfig.db);
 
 
 router.get('/ftotal', async function(req,res,next){
-    const bid = req.body.bp_id;
+    const bill_id = req.body.bp_id;
 
-    await db.query("call total_field(?)", [bid], (err, result) => {
+    await db.query("call total_field(?)", [bill_id], (err, result) => {
         if(err){
             res.status(400)
             console.log(err);
@@ -26,9 +26,9 @@ router.get('/ftotal', async function(req,res,next){
 
 
 router.get('/field', async function(req,res,next){
-    const bid = req.body.b_id;
+    const bill_id = req.body.b_id;
 
-    await db.query("call field_booking_show(?)" , [bid], (err,result) => {
+    await db.query("call field_booking_show(?)" , [bill_id], (err,result) => {
         if(err){
             res.status(400)
             console.log(err);
@@ -41,9 +41,9 @@ router.get('/field', async function(req,res,next){
 
 
 router.get('/bfield', async function(req,res,next){
-    const bid = req.body.bp_id;
+    const bill_id = req.body.bp_id;
 
-    await db.query("call field_bill_show(?)" , [bid], (err,result) => {
+    await db.query("call field_bill_show(?)" , [bill_id], (err,result) => {
         if(err){
             res.status(400)
             console.log(err);
@@ -57,11 +57,11 @@ router.get('/bfield', async function(req,res,next){
 
 
 router.post('/', async function(req,res,next){
-    const pid = req.body.bp_id;
-    const sid = req.body.std_id;
-    const tid = req.body.td_id;
+    const bill_id = req.body.bp_id;
+    const field_id = req.body.std_id;
+    const timing_id = req.body.td_id;
     
-    await db.query("call field_paid(?,?,?)" ,[pid,sid,tid], (err, result) => {
+    await db.query("call field_paid(?,?,?)" ,[bill_id,field_id,timing_id], (err, result) => {
         if(err){
             res.status(400)
             console.log(err);
@@ -74,10 +74,10 @@ router.post('/', async function(req,res,next){
 
 
 router.delete('/', async function(req,res,next){
-    const pid = req.body.bp_id;
-    const sid = req.body.std_id;
+    const bill_id = req.body.bp_id;
+    const field_id = req.body.std_id;
     
-    await db.query("call field_bill_delete(?,?)" ,[pid,sid], (err, result) => {
+    await db.query("call field_bill_delete(?,?)" ,[bill_id,field_id], (err, result) => {
         if(err){
             res.status(400)
             console.log(err);

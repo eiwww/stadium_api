@@ -10,8 +10,8 @@ const db = mysql.createConnection(dbconfig.db);
 
 
 router.get('/reserve', async function(req,res,next){
-    const id = req.body.st_id;
-    await db.query("call reserve_staff_all(?)", [id], (err, result) => {
+    const stadium_id = req.body.st_id;
+    await db.query("call reserve_staff_all(?)", [stadium_id], (err, result) => {
         if(err){
             res.status(400)
             console.log(err);
@@ -36,8 +36,8 @@ router.get('/show', async function(req,res,next){
 }) // ສະແດງຕາຕະລາງເດີ່ນທັງໝົດ ||||||||||||||||||||||||||||||||||||||||||||||||||
 
 router.get('/show/phone', async function(req,res,next){
-    const id = req.body.st_id;
-    await db.query("call stadium_phone(?)", [id], (err, result) => {
+    const stadium_id = req.body.st_id;
+    await db.query("call stadium_phone(?)", [stadium_id], (err, result) => {
         if(err){
             res.status(400)
             console.log(err);
@@ -48,58 +48,129 @@ router.get('/show/phone', async function(req,res,next){
     })
 }) // ສະແດງຕາຕະລາງເບີໂທຂອງເດີ່ນ ||||||||||||||||||||||||||||||||||||||||||||||||||
 
-router.post('/add', async function(req,res,next){
-    const id = req.body.st_id;
-    const nm = req.body.st_name;
-    const des = req.body.description;
-    const cc = req.body.config_code;
-    const vl = req.body.village;
-    const dt = req.body.district;
-    const pv = req.body.province;
-    const tc = req.body.time_cancelbooking;
-    
 
-    if(!req.files){
-        res.status(500)
-        res.send("Please choose the image");
+router.get('/test' ,async function(req,res,next){
+    var a = 2;
+    var b;
+    if(a==0){
+        b="ok";
     }else{
-
-        let logo = req.files.logo;
-        let uploadlogo = "./upload/stadium/" + logo.name;
-
-        let sampleFile = req.files.sampleFile;
-        let uploadPath = "./upload/stadium/" + sampleFile.name;
-
-         logo.mv(uploadlogo,function(err){
-            if(err) return res.status(500).send(err);
-
-            const lg = logo.name;
-
-             sampleFile.mv(uploadPath, function(err){
-                if(err) return res.status(500).send(err);
-    
-                const img = sampleFile.name;
-                 db.query("call stadium_add(?,?,?,?,?,?,?,?,?,?)", [id,nm,des,cc,vl,dt,pv,tc,lg,img], (err,result) => {
-                    if(err){
-                        res.status(400)
-                        console.log(err);
-                    }else{
-                        res.status(200)
-                        res.send(result);
-                    }
-                })
-            })
-        })
-        
+        b="FAK";
     }
+    res.send(b);
+})
+
+
+router.post('/add', async function(req,res,next){
+    
+    const stadium_name = req.body.st_name;
+    const description = req.body.description;
+    const configcode = req.body.config_code;
+    const village = req.body.village;
+    const district = req.body.district;
+    const province = req.body.province;
+    const time_cancel = req.body.time_cancelbooking;
+    
+    db.query("select MAX(st_id) as mid from tbstadium", (err,resu) => {
+        if(resu[0] == null){
+            const stadium_id = "st1";
+            if(!req.files){
+                res.status(500)
+                res.send("Please choose the image");
+            }else{
+                
+                
+                if(!req.files.logo){
+                    return res.status(500).send("Please choose the logo");
+                }
+                if(!req.files.sampleFile){
+                    return res.status(500).send("Please choose the image");
+                }
+
+                let logo = req.files.logo;
+                let uploadlogo = "./upload/stadium/" + logo.name;
+        
+                let sampleFile = req.files.sampleFile;
+                let uploadPath = "./upload/stadium/" + sampleFile.name;
+        
+                logo.mv(uploadlogo,function(err){
+                    if(err) return res.status(500).send(err);
+        
+                    const lg = logo.name;
+        
+                    sampleFile.mv(uploadPath, function(err){
+                        if(err) return res.status(500).send(err);
+            
+                        const img = sampleFile.name;
+                        db.query("call stadium_add(?,?,?,?,?,?,?,?,?,?)", [stadium_id,stadium_name,description,configcode,village,district,province,time_cancel,lg,img], (err,result) => {
+                            if(err){
+                                res.status(400)
+                                console.log(err);
+                            }else{
+                                res.status(200)
+                                res.send(result);
+                            }
+                        })
+                    })
+                })
+                
+            }
+        }else{
+            const stadium_id = "st" + (parseInt(resu[0].mid.substring(2),10)+1);
+            if(!req.files){
+                res.status(500)
+                res.send("Please choose the image");
+            }else{
+                
+                
+                if(!req.files.logo){
+                    return res.status(500).send("Please choose the logo");
+                }
+                if(!req.files.sampleFile){
+                    return res.status(500).send("Please choose the image");
+                }
+
+                let logo = req.files.logo;
+                let uploadlogo = "./upload/stadium/" + logo.name;
+        
+                let sampleFile = req.files.sampleFile;
+                let uploadPath = "./upload/stadium/" + sampleFile.name;
+        
+                logo.mv(uploadlogo,function(err){
+                    if(err) return res.status(500).send(err);
+        
+                    const lg = logo.name;
+        
+                    sampleFile.mv(uploadPath, function(err){
+                        if(err) return res.status(500).send(err);
+            
+                        const img = sampleFile.name;
+                        db.query("call stadium_add(?,?,?,?,?,?,?,?,?,?)", [stadium_id,stadium_name,description,configcode,village,district,province,time_cancel,lg,img], (err,result) => {
+                            if(err){
+                                res.status(400)
+                                console.log(err);
+                            }else{
+                                res.status(200)
+                                res.send(result);
+                            }
+                        })
+                    })
+                })
+                
+            }
+        }
+        
+    })
+
+    
     
 }) // ເພີ່ມເດີ່ນເຂົ້າໃນລະບົບ ||||||||||||||||||||||||||||||||||||||||||||||||||
 
 
 router.post('/add/phone', async function(req,res,next){
-    const id = req.body.st_id;
-    const ph = req.body.st_phone;
-    await db.query("call stadium_phone_add(?,?)", [id,ph], (err,result) => {
+    const stadium_id = req.body.st_id;
+    const stadium_ph = req.body.st_phone;
+    await db.query("call stadium_phone_add(?,?)", [stadium_id,stadium_ph], (err,result) => {
         if(err){
             res.status(400)
             console.log(err);
@@ -111,9 +182,9 @@ router.post('/add/phone', async function(req,res,next){
 }) // ເພີ່ມເບີໂທໃຫ້ເດີ່ນ ||||||||||||||||||||||||||||||||||||||||||||||||||
 
 router.delete('/delete/phone', async function(req,res,next){
-    const id = req.body.st_id;
-    const ph = req.body.st_phone;
-    await db.query("call stadium_phone_delete(?,?)", [id,ph], (err,result) => {
+    const stadium_id = req.body.st_id;
+    const stadium_ph = req.body.st_phone;
+    await db.query("call stadium_phone_delete(?,?)", [stadium_id,stadium_ph], (err,result) => {
         if(err){
             res.status(400)
             console.log(err);
@@ -126,19 +197,19 @@ router.delete('/delete/phone', async function(req,res,next){
 
 
 router.put('/edit', async function(req,res,next){
-    const id = req.body.st_id;
-    const nm = req.body.st_name;
-    const des = req.body.description;
-    const vl = req.body.village;
-    const dt = req.body.district;
-    const pv = req.body.province;
-    const tc = req.body.time_cancelbooking;
-    const lgp = req.body.logo_pic;
-    const img = req.body.picture;
-    const stt = req.body.status;
+    const stadium_id = req.body.st_id;
+    const stadium_name = req.body.st_name;
+    const description = req.body.description;
+    const village = req.body.village;
+    const district = req.body.district;
+    const province = req.body.province;
+    const time_cancel = req.body.time_cancelbooking;
+    const logo_old = req.body.logo_pic;
+    const img_old = req.body.picture;
+    const stadium_status = req.body.status;
 
     if(!req.files){
-        db.query("call stadium_update(?,?,?,?,?,?,?,?,?,?)", [nm,des,vl,dt,pv,tc,lgp,img,stt,id], (err,result) => {
+        db.query("call stadium_update(?,?,?,?,?,?,?,?,?,?)", [stadium_name,description,village,district,province,time_cancel,logo_old,img_old,stadium_status,stadium_id], (err,result) => {
             if(err){
                 res.status(400)
                 console.log(err);
@@ -148,22 +219,15 @@ router.put('/edit', async function(req,res,next){
             }
         })
     }else{
-        let logo = req.files.logo;
-        let uploadlogo = "./upload/stadium/" + logo.name;
-        
-        let sampleFile = req.files.sampleFile;
-        let uploadPath = "./upload/stadium/"+sampleFile.name;
 
-        logo.mv(uploadlogo,function(err){
-            if(err) return res.status(500).send(err);
-
-            const lg = logo.name;
-
+        if(!req.files.logo){
+            let sampleFile = req.files.sampleFile;
+            let uploadPath = "./upload/stadium/"+sampleFile.name;
             sampleFile.mv(uploadPath, function(err){
                 if(err) return res.status(500).send(err);
-    
+                
                 const im = sampleFile.name;
-                db.query("call stadium_update(?,?,?,?,?,?,?,?,?,?)", [nm,des,vl,dt,pv,tc,lg,im,stt,id], (err,result) => {
+                db.query("call stadium_update(?,?,?,?,?,?,?,?,?,?)", [stadium_name,description,village,district,province,time_cancel,logo_old,im,stadium_status,stadium_id], (err,result) => {
                     if(err){
                         res.status(400)
                         console.log(err);
@@ -173,8 +237,55 @@ router.put('/edit', async function(req,res,next){
                     }
                 })
             })
-        })
-        
+
+        }else if(!req.files.sampleFile) {
+            let logo = req.files.logo;
+            let uploadlogo = "./upload/stadium/" + logo.name;
+
+            logo.mv(uploadlogo,function(err){
+                if(err) return res.status(500).send(err);
+
+                const lg = logo.name;
+                
+                db.query("call stadium_update(?,?,?,?,?,?,?,?,?,?)", [stadium_name,description,village,district,province,time_cancel,lg,img_old,stadium_status,stadium_id], (err,result) => {
+                    if(err){
+                        res.status(400)
+                        console.log(err);
+                    }else{
+                        res.status(200)
+                        res.send(result);
+                    }
+                })
+            })
+
+        } else {
+            let logo = req.files.logo;
+            let uploadlogo = "./upload/stadium/" + logo.name;
+            
+            let sampleFile = req.files.sampleFile;
+            let uploadPath = "./upload/stadium/"+sampleFile.name;
+
+            logo.mv(uploadlogo,function(err){
+                if(err) return res.status(500).send(err);
+
+                const lg = logo.name;
+
+                sampleFile.mv(uploadPath, function(err){
+                    if(err) return res.status(500).send(err);
+                    
+                    const im = sampleFile.name;
+                    db.query("call stadium_update(?,?,?,?,?,?,?,?,?,?)", [stadium_name,description,village,district,province,time_cancel,lg,im,stadium_status,stadium_id], (err,result) => {
+                        if(err){
+                            res.status(400)
+                            console.log(err);
+                        }else{
+                            res.status(200)
+                            res.send(result);
+                        }
+                    })
+                })
+            })
+        }
 
     }
     
@@ -182,8 +293,8 @@ router.put('/edit', async function(req,res,next){
 
 
 router.delete('/:st_id', async function(req,res,next){
-    const id = req.params.st_id;
-    await db.query("call stadium_delete(?)", [id], (err,result) => {
+    const stadium_id = req.params.st_id;
+    await db.query("call stadium_delete(?)", [stadium_id], (err,result) => {
         if(err){
             res.status(400)
             console.log(err);
