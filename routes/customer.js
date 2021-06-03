@@ -27,9 +27,10 @@ router.get('/', aut, async function(req, res, next) {
             console.log(err);
         }else{
             res.status(200);
-            res.send(result);
+            res.send(result[0]);
         }
     })
+    
 }) //ສະແດງຜູ້ໃຊ້
 
 function verifyToken(req, res, next) {
@@ -124,7 +125,7 @@ router.post('/', async (req, res) => {
         }else{
             if(!req.files){
                 bcrypt.hash(password, 10).then((hash) => {
-                    db.query("call user_add('',?,?,?,?,?,?)", [email, hash, nm, sn, pf, ph], (err, result) => {
+                    db.query("call user_add(?,?,?,?,?,?)", [email, hash, nm, sn, pf, ph], (err, result) => {
                         if(err){
                             res.status(400).json({ error: err });
                         }else{
@@ -144,7 +145,7 @@ router.post('/', async (req, res) => {
                     const im = sampleFile.name;
 
                     bcrypt.hash(password, 10).then((hash) => {
-                        db.query("call user_add('',?,?,?,?,?,?)", [email, hash, nm, sn, im, ph], (err, result) => {
+                        db.query("call user_add(?,?,?,?,?,?)", [email, hash, nm, sn, im, ph], (err, result) => {
                             if(err){
                                 res.status(400).json({ error: err });
                             }else{

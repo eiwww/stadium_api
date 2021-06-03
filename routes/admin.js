@@ -21,7 +21,7 @@ router.get("/",aut, async function (req, res, next) {
       console.log(err);
     } else {
       res.status(200);
-      res.send(result);
+      res.send(result[0]);
     }
   });
 }); //ສະແດງເຈົ້າຂອງລະບົບ ||||||||||||||||||||||||||||||||||||||||||||||||||
@@ -46,7 +46,7 @@ router.post("/", aut, async (req, res) => {
     }else{
       if(!req.files){
         bcrypt.hash(password, 10).then((hash) => {
-          db.query("call admin_add('',?,?,?,?)",[email, hash, name, img],(err, result) => {
+          db.query("call admin_add(?,?,?,?)",[email, hash, name, img],(err, result) => {
               if (err) {
                 res.status(400).json({ error: err });
               } else {
@@ -66,7 +66,7 @@ router.post("/", aut, async (req, res) => {
             const im = sampleFile.name;
 
             bcrypt.hash(password, 10).then((hash) => {
-              db.query("call admin_add('',?,?,?,?)",[email, hash, name, im],(err, result) => {
+              db.query("call admin_add(?,?,?,?)",[email, hash, name, im],(err, result) => {
                   if (err) {
                     res.status(400).json({ error: err });
                   } else {

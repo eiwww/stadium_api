@@ -20,7 +20,7 @@ router.get('/', async function(req,res,next){
             console.log(err);
         }else{
             res.status(200)
-            res.send(result);
+            res.send(result[0]);
         }
     })
 }) // ສະແດງລາຍການຈອງລູກຄ້າທີ່ມີບັນຊີ ||||||||||||||||||||||||||||||||||||||||||||||||||

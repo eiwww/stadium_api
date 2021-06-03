@@ -23,7 +23,7 @@ router.get('/:st_id', async function(req,res,next) {
             console.log(err);
         }else{
             res.status(200)
-            res.send(result);
+            res.send(result[0]);
         }
     })
 }) // ສະແດງພະນັກງານທັງໝົດຂອງເດີ່ນ ||||||||||||||||||||||||||||||||||||||||||||||||||

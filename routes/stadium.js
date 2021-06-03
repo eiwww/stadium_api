@@ -17,7 +17,7 @@ router.get('/reserve', async function(req,res,next){
             console.log(err);
         }else{
             res.status(200)
-            res.send(result);
+            res.send(result[0]);
         }
     })
 }) // ສະແດງຕາຕະລາງຈອງເດີ່ນທັງໝົດຂອງເດີ່ນນັ້ນໆ ||||||||||||||||||||||||||||||||||||||||||||||||||
@@ -30,7 +30,7 @@ router.get('/show', async function(req,res,next){
             console.log(err);
         }else{
             res.status(200)
-            res.send(result);
+            res.send(result[0]);
         }
     })
 }) // ສະແດງຕາຕະລາງເດີ່ນທັງໝົດ ||||||||||||||||||||||||||||||||||||||||||||||||||
@@ -43,22 +43,22 @@ router.get('/show/phone', async function(req,res,next){
             console.log(err);
         }else{
             res.status(200)
-            res.send(result);
+            res.send(result[0]);
         }
     })
 }) // ສະແດງຕາຕະລາງເບີໂທຂອງເດີ່ນ ||||||||||||||||||||||||||||||||||||||||||||||||||
 
 
-router.get('/test' ,async function(req,res,next){
-    var a = 2;
-    var b;
-    if(a==0){
-        b="ok";
-    }else{
-        b="FAK";
-    }
-    res.send(b);
-})
+// router.get('/test' ,async function(req,res,next){
+//     var a = 2;
+//     var b;
+//     if(a==0){
+//         b="ok";
+//     }else{
+//         b="FAK";
+//     }
+//     res.send(b);
+// })  Test sue2
 
 
 router.post('/add', async function(req,res,next){

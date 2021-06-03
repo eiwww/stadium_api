@@ -19,7 +19,7 @@ router.get('/', async function(req,res,next){
             console.log(err);
         }else{
             res.status(200)
-            res.send(result);
+            res.send(result[0]);
         }
     })
 }) // ລາຍການນໍ້າທັງໝົດຂອງໃບບິນນັ້ນ ||||||||||||||||||||||||||||||||||||||||||||||||||
@@ -34,26 +34,27 @@ router.get('/wtotal', async function(req,res,next){
             console.log(err);
         }else{
             res.status(200)
-            res.send(result);
+            res.send(result[0]);
         }
     })
 }) // ລວມລາຄານໍ້າທັງໝົດຂອງໃບບິນນັ້ນ ||||||||||||||||||||||||||||||||||||||||||||||||||
 
 
 router.post('/', async function(req,res,next){
-    const pid = req.body.bp_id;
-    const wid = req.body.stw_id;
-    const qty = req.body.qty;
     
-    await db.query("call water_bill(?,?,?)" ,[pid,wid,qty], (err, result) => {
-        if(err){
-            res.status(400)
-            console.log(err);
-        }else{
-            res.status(200)
-            res.send(result);
-        }
-    })
+    const data = req.body.data;
+    
+    for(let i=0; i<data.length; i++){
+        db.query("call water_bill(?,?,?)" ,[data[i].bill_id,data[i].water_id,data[i].qty], (err, result) => {
+            if(err){
+                return res.status(400).send(err);
+            }
+        })
+    }
+
+    res.status(200)
+    res.send(result);
+    
 }) // ເພີ່ມລາຍການນໍ້າເຂົ້າໃບບິນ ||||||||||||||||||||||||||||||||||||||||||||||||||
 
 
