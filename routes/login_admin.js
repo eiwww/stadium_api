@@ -47,7 +47,7 @@ router.post('/', async (req, res) => {
                             .send({ error: "Wrong Username and Password Combination!" });
                     }else{
 
-                        jwt.sign({data:result[0][0].a_id, role:'admin'}, "secret", (er, token) => {
+                        jwt.sign({data:result[0][0].a_id, role:result[0][0].role}, "secret", (er, token) => {
                             //res.cookie("access-token", token, { httpOnly: true });
                             res.status(200)
                             res.json({token});
