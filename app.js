@@ -25,6 +25,7 @@ var bill = require('./routes/reserve_paid');
 var water_bill = require('./routes/water_paid');
 var field_bill = require('./routes/field_paid');
 var admin_ac = require('./routes/login_admin');
+var post = require('./routes/post');
 
 var app = express();
 
@@ -60,6 +61,7 @@ app.use('/bill', bill);
 app.use('/water_bill', water_bill);
 app.use('/field_bill', field_bill);
 app.use('/admin_ac', admin_ac);
+app.use('/post', post);
 
 
 // catch 404 and forward to error handler

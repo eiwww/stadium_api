@@ -9,6 +9,19 @@ router.use(express.json());
 const db = mysql.createConnection(dbconfig.db);
 
 
+router.get('/:st_id', (req,res) => {
+    const stadium_id = req.params.st_id;
+    db.query("call stadium_detail(?)", [stadium_id], (err, result) => {
+        if(err){
+            res.status(400)
+            console.log(err)
+        }else{
+            res.status(200).send(result[0])
+        }
+    })
+})
+
+
 router.get('/reserve', async function(req,res,next){
     const stadium_id = req.body.st_id;
     await db.query("call reserve_staff_all(?)", [stadium_id], (err, result) => {

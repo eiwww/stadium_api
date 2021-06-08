@@ -1,5 +1,6 @@
 var express = require('express');
 var router = express.Router();
+require("dotenv").config();
 
 const mysql = require('mysql');
 const dbconfig = require('../dbConnect/dbconnect');
@@ -9,7 +10,7 @@ const cookieParser = require('cookie-parser');
 const cors=require('cors');
 const jwt = require("jsonwebtoken");
 
-const aut = require('../middleware/admin-JWT')
+const aut = require('../middleware/user-JWT')
 
 router.use(express.static('public'));
 router.use(express.static('upload'));
@@ -74,6 +75,7 @@ router.post('/login', async (req,res) => {
     })
 }) // ກວດສອບຕອນລ໊ອກອິນ ພ້ອມສົ່ງຄ່າ token ||||||||||||||||||||||||||||||||||||||||||||||||||
 
+
 router.get('/login/user',verifyToken, (req, res) => {
     jwt.verify(req.token, "secret", async (err, authData) => {
         if(err){
@@ -84,7 +86,7 @@ router.get('/login/user',verifyToken, (req, res) => {
                 if(er){
                     console.log(er);
                 }else{
-                    res.send(result);
+                    res.send(result[0]);
                 }
             })
         }
@@ -102,7 +104,7 @@ router.get('/login/follow',verifyToken, (req, res) => {
                 if(er){
                     console.log(er);
                 }else{
-                    res.send(result);
+                    res.send(result[0]);
                 }
             })
         }

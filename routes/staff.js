@@ -55,7 +55,7 @@ router.post('/login', async(req, res) => {
                         .status(400)
                         .send({ error: "Wrong Username and Password Combination!" });
                 }else{
-                    jwt.sign({data:result[0][0].su_id,role:result[0][0].status}, "secret", (er, token) => {
+                    jwt.sign({data:result[0][0].su_id,role:result[0][0].role}, "secret", (er, token) => {
                         res.cookie("access-token", token, {httpOnly:true});
                         res.status(200)
                         res.json({token});
@@ -70,7 +70,7 @@ router.post('/login', async(req, res) => {
 }) // ລ໊ອກອິນຂອງພະນັກງານ ||||||||||||||||||||||||||||||||||||||||||||||||||
 
 router.post('/login/authen',verifyToken, (req, res) => {
-    jwt.verify(req.token, "ssecretkey", (err, authData) => {
+    jwt.verify(req.token, "secret", (err, authData) => {
         if(err){
             res.sendStatus(403);
         }else{
@@ -86,7 +86,7 @@ router.post('/', async function(req,res,next) {
     const staff_name = req.body.su_name;
     const staff_surname = req.body.su_surname;
     const staff_age = req.body.su_age;
-    const staff_status = req.body.status;
+    const staff_status = req.body.role;
     const staff_email = req.body.su_email;
     const staff_password = req.body.su_password;
     const img = "defualt.jpg";
@@ -142,7 +142,7 @@ router.put('/', async function(req,res,next) {
     const staff_surname = req.body.su_surname;
     const staff_age = req.body.su_age;
     const img = req.body.picture;
-    const staff_status = req.body.status;
+    const staff_status = req.body.role;
 
     if(!req.files){
         db.query("call staff_update(?,?,?,?,?,?)" , [staff_name,staff_surname,staff_age,img,staff_status,staff_id],(err,result) => {
