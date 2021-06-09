@@ -20,4 +20,5 @@ router.get('/', (req,res) => {
 }) //ສະແດງໂພສຢູ່ໜ້າ home user
 
 
+
 module.exports = router;

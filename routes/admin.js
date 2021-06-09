@@ -35,7 +35,7 @@ router.post("/", aut, async (req, res) => {
   const email = req.body.a_email;
   const password = req.body.a_password;
   const name = req.body.a_name;
-  const img = 'default.jpg';
+  const img = null;
 
 
   await db.query("call check_ad_email(?)", [email], (err,result) => {

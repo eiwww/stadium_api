@@ -117,7 +117,7 @@ router.post('/', async (req, res) => {
     const password = req.body.c_password;
     const nm = req.body.c_name;
     const sn = req.body.c_surname;
-    const pf = "default.jpg";
+    const pf = null;
     const ph = req.body.c_phone;
 
     await db.query("call check_user_email(?)", [email], (err, result) => {

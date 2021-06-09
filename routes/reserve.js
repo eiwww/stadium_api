@@ -36,12 +36,22 @@ router.post('/booking', async (req,res) => {
     
     db.query("select time_cancelbooking from tbstadium where st_id=?", [stadium_id], async (err,resu) => {
         const timecancel = resu[0].time_cancelbooking;
-        await db.query("call reserve_nou(?,?,?)", [stadium_id,stuff_id,timecancel], (err, result) => {
-            if(err){
-                res.status(400)
-                console.log(err);
-            }
-        }) // ເພີ່ມຂໍ້ມູນການຈອງຫຼັກໂດຍພະນັກງານ
+        if(timecancel === 0){
+            await db.query("call reserve_nou_notime(?,?)", [stadium_id,stuff_id], (err, result) => {
+                if(err){
+                    res.status(400)
+                    console.log(err);
+                }
+            }) // ເພີ່ມຂໍ້ມູນການຈອງຫຼັກໂດຍພະນັກງານ ຖ້າບໍ່ມີເວລາຍົກເລີກ
+        }else{
+            await db.query("call reserve_nou(?,?,?)", [stadium_id,stuff_id,timecancel], (err, result) => {
+                if(err){
+                    res.status(400)
+                    console.log(err);
+                }
+            }) // ເພີ່ມຂໍ້ມູນການຈອງຫຼັກໂດຍພະນັກງານ
+        }
+        
     
         await db.query("select MAX(b_id) as mid from tbbooking where su_id=?", [stuff_id], (err, resu) => {
             const book_id = resu[0].mid; 

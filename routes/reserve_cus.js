@@ -44,15 +44,28 @@ router.put('/accept', async (req,res) => {
 
     db.query("select time_cancelbooking from tbstadium where st_id=?", [stadium_id], (err,resu) => {
         const timecancel = resu[0].time_cancelbooking;
-        db.query("call reserve_confirm_cus(?,?,?)", [stadium_id,timecancel,book_id], (er,result) => {
-            if(er){
-                res.status(400)
-                console.log(er);
-            }else{
-                res.status(200)
-                res.send(result);
-            }
-        })
+        if(timecancel === 0){
+            db.query("call reserve_confirm_cus_notime(?,?)", [stadium_id,book_id], (er,result) => {
+                if(er){
+                    res.status(400)
+                    console.log(er);
+                }else{
+                    res.status(200)
+                    res.send(result);
+                }
+            })
+        }else{
+            db.query("call reserve_confirm_cus(?,?,?)", [stadium_id,timecancel,book_id], (er,result) => {
+                if(er){
+                    res.status(400)
+                    console.log(er);
+                }else{
+                    res.status(200)
+                    res.send(result);
+                }
+            })
+        }
+        
     })
 }) // ຢືນຢັນການຈອງ ||||||||||||||||||||||||||||||||||||||||||||||||||
 

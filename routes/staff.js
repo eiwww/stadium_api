@@ -89,7 +89,7 @@ router.post('/', async function(req,res,next) {
     const staff_status = req.body.role;
     const staff_email = req.body.su_email;
     const staff_password = req.body.su_password;
-    const img = "defualt.jpg";
+    const img = null;
 
     await db.query("call check_staff_email(?)", [staff_email], (err,result) => {
         if(result[0].length > 0){
