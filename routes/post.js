@@ -20,5 +20,10 @@ router.get('/', (req,res) => {
 }) //ສະແດງໂພສຢູ່ໜ້າ home user
 
 
+router.post('/',(req,res) => {
+    
+}) //ເພີ່ມໂພສຂອງສະໜາມ
+
+
 
 module.exports = router;
