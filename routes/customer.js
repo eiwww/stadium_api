@@ -86,7 +86,8 @@ router.get('/login/user',verifyToken, (req, res) => {
                 if(er){
                     console.log(er);
                 }else{
-                    res.send(result[0]);
+                    console.log(result);
+                    res.send(result[0][0]);
                 }
             })
         }

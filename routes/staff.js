@@ -69,13 +69,19 @@ router.post('/login', async(req, res) => {
     })
 }) // ລ໊ອກອິນຂອງພະນັກງານ ||||||||||||||||||||||||||||||||||||||||||||||||||
 
-router.post('/login/authen',verifyToken, (req, res) => {
-    jwt.verify(req.token, "secret", (err, authData) => {
+router.get('/login/authen',verifyToken, (req, res) => {
+    jwt.verify(req.token, "secret", async (err, authData) => {
         if(err){
             res.sendStatus(403);
         }else{
-            res.status(200)
-            res.json({message: "Staff Complete", authData});
+            const user_id = authData.data;
+            await db.query("call staff_auth(?)", [user_id], (er, result) => {
+                if (er) {
+                    console.log(er);
+                } else {
+                    res.send(result[0][0]);
+                }
+            });
         }
     })
 }) // authen ສົ່ງຂໍ້ມູນທີ່ແປງຈາກ token ||||||||||||||||||||||||||||||||||||||||||||||||||

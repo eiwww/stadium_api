@@ -4,9 +4,27 @@ var router = express.Router();
 const mysql = require('mysql');
 const dbconfig = require('../dbConnect/dbconnect');
 
+const cors = require("cors");
+const jwt = require("jsonwebtoken");
+const cookieParser = require("cookie-parser");
+
 router.use(express.json());
+router.use(cors());
+router.use(cookieParser());
 
 const db = mysql.createConnection(dbconfig.db);
+
+
+function verifyToken(req, res, next) {
+    const bearerHeader = req.headers["authorization"];
+    if (typeof bearerHeader !== "undefined") {
+      const bearerToken = bearerHeader.split(" ")[1];
+      req.token = bearerToken;
+      next();
+    } else {
+      res.sendStatus(403); //forbidden
+    }
+  } // function ແປງ token ເປັນຂໍ້ມູນ
 
 
 router.get('/:st_id', (req,res) => {
@@ -19,7 +37,24 @@ router.get('/:st_id', (req,res) => {
             res.status(200).send(result[0])
         }
     })
-})
+}) // ສະແດງລາຍລະອຽດຂອງເດີ່ນນັ້ນໆ ||||||||||||||||||||||||||||||||||||||||||||||||||
+
+
+router.get('/checkValidData/:stadiumId_Admin', async function(req,res,next){
+    const stadium_id = req.params.stadiumId_Admin
+    
+    await db.query("call check_valid_stadium(?)", [stadium_id], (err, result) => {
+        if(err){
+            console.log(err);
+            return res.status(500).send(err);
+        }
+        if (result[0].length > 0) {
+            return res.status(200).send('200')
+        } else {
+            return res.status(404).send('404')
+        }
+    })
+}) // check ວ່າມີ stadium ໃນຖານຂໍ້ມູນແທ້ ຫຼື ບໍ່? ||||||||||||||||||||||||||||||||||||||||||||||||||
 
 
 router.get('/reserve', async function(req,res,next){
@@ -115,13 +150,36 @@ router.post('/add', async function(req,res,next){
                         if(err) return res.status(500).send(err);
             
                         const img = sampleFile.name;
+
+                        db.query("call check_config_code(?)", [configcode], (err, result) => {
+                            if (result[0].length > 0) return res.status(400).send("ລະຫັດນີ້ຖືກໃຊ້ແລ້ວ!!")})
+
                         db.query("call stadium_add(?,?,?,?,?,?,?,?,?,?)", [stadium_id,stadium_name,description,configcode,village,district,province,time_cancel,lg,img], (err,result) => {
                             if(err){
                                 res.status(400)
                                 console.log(err);
                             }else{
-                                res.status(200)
-                                res.send(result);
+                                jwt.verify(req.token, "secret", async (err, authData) => {
+                                    if (err) {
+                                      res.sendStatus(403);
+                                    } else {
+                                      const admin_id = authData.data;
+                                      await db.query("call staff_auth(?)", [admin_id], (er, result) => {
+                                        if (er) {
+                                          console.log(er);
+                                        } else {
+                                          const stadium_id = result[0][0].st_id;
+                                           db.query("call staff_update_stadium_id(?, ?)", [stadium_id, admin_id], (err, result) => {
+                                            if (err) {
+                                                console.log(err);
+                                            } else {
+                                                res.status(200).send('Insert completed!!');
+                                            }
+                                          })
+                                        }
+                                      });
+                                    }
+                                  });
                             }
                         })
                     })
@@ -158,13 +216,37 @@ router.post('/add', async function(req,res,next){
                         if(err) return res.status(500).send(err);
             
                         const img = sampleFile.name;
+
+                        db.query("call check_config_code(?)", [configcode], (err, result) => {
+                            if (result[0].length > 0) return res.status(400).send("ລະຫັດນີ້ຖືກໃຊ້ແລ້ວ!!")})
+
                         db.query("call stadium_add(?,?,?,?,?,?,?,?,?,?)", [stadium_id,stadium_name,description,configcode,village,district,province,time_cancel,lg,img], (err,result) => {
                             if(err){
                                 res.status(400)
                                 console.log(err);
                             }else{
-                                res.status(200)
-                                res.send(result);
+                                jwt.verify(req.token, "secret", async (err, authData) => {
+                                    if (err) {
+                                      res.sendStatus(403);
+                                    } else {
+                                      const admin_id = authData.data;
+                                      await db.query("select MAX(st_id) as useId from tbstadium", (er, result) => {
+                                        if (er) {
+                                          console.log(er);
+                                        } else {
+                                          const stadium_id = result[0].useId;
+                                          console.log(stadium_id);
+                                           db.query("call staff_update_stadium_id(?, ?)", [stadium_id, admin_id], (err, result) => {
+                                            if (err) {
+                                                console.log(err);
+                                            } else {
+                                                res.status(200).send('Insert completed!!');
+                                            }
+                                          })
+                                        }
+                                      });
+                                    }
+                                  });
                             }
                         })
                     })
