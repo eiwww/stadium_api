@@ -27,13 +27,13 @@ function verifyToken(req, res, next) {
   } // function ແປງ token ເປັນຂໍ້ມູນ
 
 
-router.get('/:st_id', (req,res) => {
+router.get('/detail/:st_id', (req,res) => {
     const stadium_id = req.params.st_id;
     db.query("call stadium_detail(?)", [stadium_id], (err, result) => {
         if(err){
             res.status(400)
             console.log(err)
-        }else{
+        }else{          
             res.status(200).send(result[0])
         }
     })
@@ -71,7 +71,7 @@ router.get('/reserve', async function(req,res,next){
 }) // ສະແດງຕາຕະລາງຈອງເດີ່ນທັງໝົດຂອງເດີ່ນນັ້ນໆ ||||||||||||||||||||||||||||||||||||||||||||||||||
 
 
-router.get('/show', async function(req,res,next){
+router.get('/', async (req,res) => {
     await db.query("call stadium()", (err, result) => {
         if(err){
             res.status(400)
@@ -97,19 +97,35 @@ router.get('/show/phone', async function(req,res,next){
 }) // ສະແດງຕາຕະລາງເບີໂທຂອງເດີ່ນ ||||||||||||||||||||||||||||||||||||||||||||||||||
 
 
-// router.get('/test' ,async function(req,res,next){
-//     var a = 2;
-//     var b;
-//     if(a==0){
-//         b="ok";
-//     }else{
-//         b="FAK";
+// router.get('/test/test' ,async function(req,res,next){
+    
+//     const a = 22;
+//     const f = a.toString();
+
+//     var vl = "";
+    
+//     const txt = f.length;
+//     for(let i = parseInt(txt); i < 8; i++){
+//         vl=vl+"0";
+//         console.log("f");
 //     }
-//     res.send(b);
-// })  Test sue2
+//     //2 = 00000002
+//     //22= 00000022
+    
+
+//     res.json(f);
+//     // var a = 2;
+//     // var b;
+//     // if(a==0){
+//     //     b="ok";
+//     // }else{
+//     //     b="FAK";
+//     // }
+//     // res.send(b);
+// })  //Test sue2
 
 
-router.post('/add', async function(req,res,next){
+router.post('/add',  async function(req,res,next){
     
     const stadium_name = req.body.st_name;
     const description = req.body.description;
@@ -119,140 +135,159 @@ router.post('/add', async function(req,res,next){
     const province = req.body.province;
     const time_cancel = req.body.time_cancelbooking;
     
-    db.query("select MAX(st_id) as mid from tbstadium", (err,resu) => {
-        if(resu[0] == null){
-            const stadium_id = "st1";
+    db.query("select MAX(st_id) as mid from tbstadium", async (err,resu) => {
+        if(resu[0].mid === null){
+            const stadium_id = "st00000001";
             if(!req.files){
                 res.status(500)
                 res.send("Please choose the image");
             }else{
                 
+                await db.query("call check_config_code(?)", [configcode], (err, result) => {
+                    if (result[0].length > 0){
+                        return res.status(400).send("ລະຫັດນີ້ຖືກໃຊ້ແລ້ວ!!")
+                    }else{
+                        if(!req.files.logo){
+                            return res.status(500).send("Please choose the logo");
+                        }
+                        if(!req.files.sampleFile){
+                            return res.status(500).send("Please choose the image");
+                        }
+        
+                        let logo = req.files.logo;
+                        let uploadlogo = "./upload/stadium/" + logo.name;
                 
-                if(!req.files.logo){
-                    return res.status(500).send("Please choose the logo");
-                }
-                if(!req.files.sampleFile){
-                    return res.status(500).send("Please choose the image");
-                }
-
-                let logo = req.files.logo;
-                let uploadlogo = "./upload/stadium/" + logo.name;
+                        let sampleFile = req.files.sampleFile;
+                        let uploadPath = "./upload/stadium/" + sampleFile.name;
+                
+                        logo.mv(uploadlogo,function(err){
+                            if(err) return res.status(500).send(err);
+                
+                            const lg = logo.name;
+                
+                            sampleFile.mv(uploadPath, async function(err){
+                                if(err) return res.status(500).send(err);
+                    
+                                const img = sampleFile.name;
         
-                let sampleFile = req.files.sampleFile;
-                let uploadPath = "./upload/stadium/" + sampleFile.name;
+                                
         
-                logo.mv(uploadlogo,function(err){
-                    if(err) return res.status(500).send(err);
-        
-                    const lg = logo.name;
-        
-                    sampleFile.mv(uploadPath, function(err){
-                        if(err) return res.status(500).send(err);
-            
-                        const img = sampleFile.name;
-
-                        db.query("call check_config_code(?)", [configcode], (err, result) => {
-                            if (result[0].length > 0) return res.status(400).send("ລະຫັດນີ້ຖືກໃຊ້ແລ້ວ!!")})
-
-                        db.query("call stadium_add(?,?,?,?,?,?,?,?,?,?)", [stadium_id,stadium_name,description,configcode,village,district,province,time_cancel,lg,img], (err,result) => {
-                            if(err){
-                                res.status(400)
-                                console.log(err);
-                            }else{
-                                jwt.verify(req.token, "secret", async (err, authData) => {
-                                    if (err) {
-                                      res.sendStatus(403);
-                                    } else {
-                                      const admin_id = authData.data;
-                                      await db.query("call staff_auth(?)", [admin_id], (er, result) => {
-                                        if (er) {
-                                          console.log(er);
-                                        } else {
-                                          const stadium_id = result[0][0].st_id;
-                                           db.query("call staff_update_stadium_id(?, ?)", [stadium_id, admin_id], (err, result) => {
+                                await db.query("call stadium_add(?,?,?,?,?,?,?,?,?,?)", [stadium_id,stadium_name,description,configcode,village,district,province,time_cancel,lg,img], (err,result) => {
+                                    if(err){
+                                        res.status(400)
+                                        console.log(err);
+                                    }else{
+                                        jwt.verify(req.token, "secret", async (err, authData) => {
                                             if (err) {
-                                                console.log(err);
+                                              res.sendStatus(403);
                                             } else {
-                                                res.status(200).send('Insert completed!!');
+                                              const admin_id = authData.data;
+                                              await db.query("call staff_auth(?)", [admin_id], (er, result) => {
+                                                if (er) {
+                                                  console.log(er);
+                                                } else {
+                                                  const stadium_id = result[0][0].st_id;
+                                                   db.query("call staff_update_stadium_id(?, ?)", [stadium_id, admin_id], (err, result) => {
+                                                    if (err) {
+                                                        console.log(err);
+                                                    } else {
+                                                        res.status(200).send('Insert completed!!');
+                                                    }
+                                                  })
+                                                }
+                                              });
                                             }
-                                          })
-                                        }
-                                      });
+                                          });
                                     }
-                                  });
-                            }
+                                })
+                            })
                         })
-                    })
+                    } 
                 })
+
+                
                 
             }
         }else{
-            const stadium_id = "st" + (parseInt(resu[0].mid.substring(2),10)+1);
-            if(!req.files){
-                res.status(500)
-                res.send("Please choose the image");
-            }else{
+
+            await db.query("call check_config_code(?)", [configcode], (err, result) => {
+                if (result[0].length > 0){
+                    return res.status(400).send("ລະຫັດນີ້ຖືກໃຊ້ແລ້ວ!!")
+                }else{
+                    const number_id = parseInt(resu[0].mid.substring(2),10)+1;
+                    const str_id = number_id.toString();
+                    var nid = "";
+                    const txt = str_id.length;
+                    for(let i = parseInt(txt); i < 8; i++){
+                        nid=nid+"0";
+                    }
+                    const stadium_id = "st" + nid+""+str_id;
+                    if(!req.files){
+                        res.status(500)
+                        res.send("Please choose the image");
+                    }else{
+                        
+                        
+                        if(!req.files.logo){
+                            return res.status(500).send("Please choose the logo");
+                        }
+                        if(!req.files.sampleFile){
+                            return res.status(500).send("Please choose the image");
+                        }
+
+                        let logo = req.files.logo;
+                        let uploadlogo = "./upload/stadium/" + logo.name;
                 
+                        let sampleFile = req.files.sampleFile;
+                        let uploadPath = "./upload/stadium/" + sampleFile.name;
                 
-                if(!req.files.logo){
-                    return res.status(500).send("Please choose the logo");
-                }
-                if(!req.files.sampleFile){
-                    return res.status(500).send("Please choose the image");
-                }
+                        logo.mv(uploadlogo,function(err){
+                            if(err) return res.status(500).send(err);
+                
+                            const lg = logo.name;
+                
+                            sampleFile.mv(uploadPath, async function(err){
+                                if(err) return res.status(500).send(err);
+                    
+                                const img = sampleFile.name;
 
-                let logo = req.files.logo;
-                let uploadlogo = "./upload/stadium/" + logo.name;
-        
-                let sampleFile = req.files.sampleFile;
-                let uploadPath = "./upload/stadium/" + sampleFile.name;
-        
-                logo.mv(uploadlogo,function(err){
-                    if(err) return res.status(500).send(err);
-        
-                    const lg = logo.name;
-        
-                    sampleFile.mv(uploadPath, function(err){
-                        if(err) return res.status(500).send(err);
-            
-                        const img = sampleFile.name;
-
-                        db.query("call check_config_code(?)", [configcode], (err, result) => {
-                            if (result[0].length > 0) return res.status(400).send("ລະຫັດນີ້ຖືກໃຊ້ແລ້ວ!!")})
-
-                        db.query("call stadium_add(?,?,?,?,?,?,?,?,?,?)", [stadium_id,stadium_name,description,configcode,village,district,province,time_cancel,lg,img], (err,result) => {
-                            if(err){
-                                res.status(400)
-                                console.log(err);
-                            }else{
-                                jwt.verify(req.token, "secret", async (err, authData) => {
-                                    if (err) {
-                                      res.sendStatus(403);
-                                    } else {
-                                      const admin_id = authData.data;
-                                      await db.query("select MAX(st_id) as useId from tbstadium", (er, result) => {
-                                        if (er) {
-                                          console.log(er);
-                                        } else {
-                                          const stadium_id = result[0].useId;
-                                          console.log(stadium_id);
-                                           db.query("call staff_update_stadium_id(?, ?)", [stadium_id, admin_id], (err, result) => {
+                                await db.query("call stadium_add(?,?,?,?,?,?,?,?,?,?)", [stadium_id,stadium_name,description,configcode,village,district,province,time_cancel,lg,img], (err,result) => {
+                                    if(err){
+                                        res.status(400)
+                                        console.log(err);
+                                    }else{
+                                        jwt.verify(req.token, "secret", async (err, authData) => {
                                             if (err) {
-                                                console.log(err);
+                                            res.sendStatus(403);
                                             } else {
-                                                res.status(200).send('Insert completed!!');
+                                            const admin_id = authData.data;
+                                            await db.query("select MAX(st_id) as useId from tbstadium", (er, result) => {
+                                                if (er) {
+                                                console.log(er);
+                                                } else {
+                                                const stadium_id = result[0].useId;
+                                                console.log(stadium_id);
+                                                db.query("call staff_update_stadium_id(?, ?)", [stadium_id, admin_id], (err, result) => {
+                                                    if (err) {
+                                                        console.log(err);
+                                                    } else {
+                                                        res.status(200).send('Insert completed!!');
+                                                    }
+                                                })
+                                                }
+                                            });
                                             }
-                                          })
-                                        }
-                                      });
+                                        });
                                     }
-                                  });
-                            }
+                                })
+                            })
                         })
-                    })
-                })
-                
-            }
+                        
+                    }
+                }
+            })
+
+            
         }
         
     })

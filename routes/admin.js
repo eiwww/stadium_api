@@ -19,6 +19,7 @@ router.get("/",aut, async function (req, res, next) {
     if (err) {
       res.status(400)
       console.log(err);
+      res.send("Something Wrong")
     } else {
       res.status(200);
       res.send(result[0]);
@@ -93,6 +94,7 @@ router.put("/", aut, async (req, res) => {
       if (err) {
         res.status(400)
         console.log(err);
+        res.send("Something Wrong")
       } else {
         res.status(200)
         res.send(result);
@@ -112,6 +114,7 @@ router.put("/", aut, async (req, res) => {
         if (err) {
           res.status(400)
           console.log(err);
+          res.send("Something Wrong")
         } else {
           res.status(200)
           res.send(result);
@@ -128,6 +131,7 @@ router.delete("/",aut, async function (req, res, next) {
     if (err) {
       res.status(400)
       console.log(err);
+      res.send("Something Wrong")
     } else {
       res.status(200)
       res.send(result);

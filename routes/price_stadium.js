@@ -53,4 +53,21 @@ router.put('/', async function(req, res, next) {
     })
 }) // ແກ້ໄຂລາຄາເດີ່ນ ||||||||||||||||||||||||||||||||||||||||||||||||||
 
+
+router.delete('/:std_id', async function(req, res, next) {
+    const field_id = req.params.std_id;
+    const timing_id = req.body.td_id;
+
+    await db.query("call stadium_price_del(?,?)", [field_id,timing_id], (err, result) => {
+        if(err){
+            res.status(400)
+            console.log(err);
+            res.send("Something Wrong")
+        }else{
+            res.status(200)
+            res.send(result);
+        }
+    })
+}) // ແກ້ໄຂລາຄາເດີ່ນ ||||||||||||||||||||||||||||||||||||||||||||||||||
+
 module.exports = router;

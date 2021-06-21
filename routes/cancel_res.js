@@ -14,6 +14,7 @@ router.get('/:c_id', async function(req,res,next){
         if(err){
             res.status(400)
             console.log(err);
+            res.send("Something Wrong")
         }else{
             res.status(200);
             res.send(result);
@@ -22,27 +23,29 @@ router.get('/:c_id', async function(req,res,next){
 }) // ສະແດງລາຍການຈອງຂອງຜູ້ໃຊ້ ||||||||||||||||||||||||||||||||||||||||||||||||||
 
 
-router.put('/field', async (req,res) => {
+router.delete('/field/:b_id', async (req,res) => {
     const book_id = req.body.b_id;
-    const field_id = req.body.std_id;
-    const timing_id = req.body.td_id;
 
     await db.query("call cancel_reserve(?)", [book_id], async (err, result) => { //ກວດສອບລາຍການຈອງດັ່ງກ່າວ ວ່າສາມາດຍົກເລີກໄດ້ບໍ່ 
                                                                             //if = 0 man yok lerk br dai // if = 1 man yok lerk dai
         if(err){
             res.status(400)
             console.log(err);
+            res.send("Something Wrong")
         }else{
             if(result[0][0].c===1){
                 
-                await db.query("call cancel_res_field(?,?,?)", [book_id,field_id,timing_id], (err1, result) => {   //ຍົກເລີກໃນຂໍ້ມູນການຈອງຂອງເດີ່ນໃນສະໜາມ
+                await db.query("call reserve_cancel(?)", [book_id], (err1, result) => {   //ຍົກເລີກໃນຂໍ້ມູນການຈອງຂອງເດີ່ນໃນສະໜາມ
                     if(err1){
                         res.status(400)
                         console.log(err1);
+                        res.send("Something Wrong")
+                    }else{
+                        res.status(200)
+                        res.send("ຍົກເລີກສໍາເລັດ");
                     }
                 })
-                res.status(200)
-                res.send("ຍົກເລີກສໍາເລັດ");
+                
             }else{
                 res.status(400);
                 res.send("ບໍ່ສາມາດຍົກເລີກໄດ້");
@@ -51,45 +54,7 @@ router.put('/field', async (req,res) => {
     })
 
     
-}) // ຍົກເລີກຈອງບາງອັນ ||||||||||||||||||||||||||||||||||||||||||||||||||
+}) // ຍົກເລີກການຈອງ ||||||||||||||||||||||||||||||||||||||||||||||||||
 
-
-router.put('/all', async (req,res) => {
-    const book_id = req.body.b_id;
-    const field_id = req.body.std_id;
-
-    await db.query("call cancel_reserve(?)", [book_id], async (err, result) => { //ກວດສອບລາຍການຈອງດັ່ງກ່າວ ວ່າສາມາດຍົກເລີກໄດ້ບໍ່ 
-                                                                            //if = 0 man yok lerk br dai // if = 1 man yok lerk dai
-        if(err){
-            res.status(400)
-            console.log(err);
-        }else{
-            if(result[0][0].c===1){
-                
-                await db.query("call cancel_res_pass(?)", [book_id], (err, result) => {   //ຍົກເລີກໃນຂໍ້ມູນການຈອງຫຼັກ
-                    if(err){
-                        res.status(400);
-                        console.log(err);
-                    }
-                })
-                await db.query("call cancel_res_all_field(?,?,?)", [book_id,field_id], (err1, result) => {   //ຍົກເລີກໃນຂໍ້ມູນການຈອງຂອງເດີ່ນທັງໝົດທີ່ມີໃນລາຍການຈອງ
-                    if(err1){
-                        res.status(400)
-                        console.log(err1);
-                    }
-                })
-
-                res.status(200)
-                res.send("ຍົກເລີກສໍາເລັດ");
-            }else{
-                res.status(400);
-                res.send("ບໍ່ສາມາດຍົກເລີກໄດ້");
-            }
-        }
-    })
-
-
-    
-}) // ຍົກເລີກຈອງທັງໝົດ ||||||||||||||||||||||||||||||||||||||||||||||||||
 
 module.exports = router;

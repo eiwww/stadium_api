@@ -45,7 +45,13 @@ router.post('/', async function(req,res,next){
                 const wid = resu[0].mid.substring(6);
                 const cd = resu[0].mid.substring(0,6);
                 const nb = parseInt(wid,10)+1;
-                const water_id = cd+nb;
+                const str_id = nb.toString();
+                var nid = "";
+                const txt = str_id.length;
+                for(let i = parseInt(txt); i < 8; i++){
+                    nid=nid+"0";
+                }
+                const water_id = cd+nid+nb;
                 if(!req.files){
                     db.query("call water_add(?,?,?,?,?,'ຂາຍໄດ້')", [water_id,stadium_id,water_name,water_price,pic], (err, result) => {
                         if(err){
@@ -81,7 +87,7 @@ router.post('/', async function(req,res,next){
         }else{
             db.query("select config_code from tbstadium where st_id=?", [stadium_id], (err, rel) => {
                 const wid = rel[0].config_code
-                const water_id = wid+"-d-1";
+                const water_id = wid+"-d-00000001";
                 if(!req.files){
                     db.query("call water_add(?,?,?,?,?,'ຂາຍໄດ້')", [water_id,stadium_id,water_name,water_price,pic], (err, result) => {
                         if(err){

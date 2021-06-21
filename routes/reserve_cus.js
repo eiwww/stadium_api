@@ -75,14 +75,15 @@ router.post('/booking', async (req,res) => {
     const customer_id = req.body.c_id;
     
     db.query("select b_id,booking_status,paid_status from tbbooking where c_id=? ORDER BY b_id DESC LIMIT 0, 1", [customer_id], (err,resu) => {
-        if(resu[0].booking_status == "ຍັງບໍ່ຈອງ" && resu[0].paid_status == "ຍັງບໍ່ຈ່າຍ"){
+        if((resu[0].booking_status === "ຍັງບໍ່ຈອງ" && resu[0].paid_status === "ຍັງບໍ່ຈ່າຍ") || (resu[0].booking_status === "ຈອງແລ້ວ" && resu[0].paid_status === "ຍັງບໍ່ຈ່າຍ")){
             res.status(200).send((resu[0].b_id).toString());
         }else{
+            
             db.query("call reserve_cus(?)", [customer_id], (err, resul) => { 
                 if(err){
                     res.status(400)
-                    
                     console.log(err);
+                    res.send("Something Wrong")
                 }else{
                     db.query("select b_id,booking_status,paid_status from tbbooking where c_id=? ORDER BY b_id DESC LIMIT 0, 1", [customer_id], (err,bid) => {
                         if(err) return res.send(err).status(400)

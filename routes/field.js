@@ -49,10 +49,16 @@ router.post('/', async function(req, res, next) {
     db.query("select * from tbstadium_details where st_id=?", [stadium_id], (err,result) => {
         if(result.length > 0){
             db.query("select MAX(std_id) as mid from tbstadium_details where st_id=?", [stadium_id], (err, resu) => {
-                const fid = resu[0].mid.substring(3);
-                const cd = resu[0].mid.substring(0,3);
+                const fid = resu[0].mid.substring(4);
+                const cd = resu[0].mid.substring(0,4);
                 const nb = parseInt(fid,10)+1;
-                const field_id = cd+nb;
+                const str_id = nb.toString();
+                var nid = "";
+                const txt = str_id.length;
+                for(let i = parseInt(txt); i < 8; i++){
+                    nid=nid+"0";
+                }
+                const field_id = cd+nid+str_id;
 
                 if(!req.files){
                     res.status(500)
@@ -82,7 +88,7 @@ router.post('/', async function(req, res, next) {
         }else{
             db.query("select config_code from tbstadium where st_id=?", [stadium_id], (err, rel) => {
                 const fid = rel[0].config_code
-                const field_id = fid+"1";
+                const field_id = fid+"-00000001";
                 if(!req.files){
                     res.status(500)
                     res.send("Please choose field image to show");

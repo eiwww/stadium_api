@@ -26,6 +26,7 @@ router.get('/', aut, async function(req, res, next) {
         if(err){
             res.status(400);
             console.log(err);
+            res.send("Something Wrong")
         }else{
             res.status(200);
             res.send(result[0]);
@@ -85,6 +86,7 @@ router.get('/login/user',verifyToken, (req, res) => {
             await db.query("call user_user_login(?)", [user_id], (er, result) => {
                 if(er){
                     console.log(er);
+                    res.send("Something Wrong")
                 }else{
                     console.log(result);
                     res.send(result[0][0]);
@@ -104,6 +106,7 @@ router.get('/login/follow',verifyToken, (req, res) => {
             await db.query("call user_following(?)", [user_id], (er, result) => {
                 if(er){
                     console.log(er);
+                    res.send("Something Wrong")
                 }else{
                     res.send(result[0]);
                 }
@@ -177,6 +180,7 @@ router.put('/', async (req, res) => {
             if(err){
                 res.status(400);
                 console.log(err);
+                res.send("Something Wrong")
             }else{
                 res.status(200)
                 res.send(result)
@@ -196,6 +200,7 @@ router.put('/', async (req, res) => {
                 if(err){
                     res.status(400)
                     console.log(err);
+                    res.send("Something Wrong")
                 }else{
                     res.status(200);
                     res.send(result)
@@ -213,6 +218,7 @@ router.delete('/', async function(req, res, next) {
         if(err){
             res.status(400)
             console.log(err);
+            res.send("Something Wrong")
         }else{
             res.status(200);
             res.send(result)
