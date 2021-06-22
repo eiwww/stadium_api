@@ -26,6 +26,7 @@ router.get('/userlogin',verifyToken, (req, res) => {
                 if(er){
                     console.log(er);
                 }else{
+                    res.status(200);
                     res.send(result);
                 }
             })

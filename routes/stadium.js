@@ -71,7 +71,7 @@ router.get('/reserve', async function(req,res,next){
 }) // ສະແດງຕາຕະລາງຈອງເດີ່ນທັງໝົດຂອງເດີ່ນນັ້ນໆ ||||||||||||||||||||||||||||||||||||||||||||||||||
 
 
-router.get('/', async (req,res) => {
+router.get('/show', async (req,res) => {
     await db.query("call stadium()", (err, result) => {
         if(err){
             res.status(400)
@@ -125,7 +125,7 @@ router.get('/show/phone', async function(req,res,next){
 // })  //Test sue2
 
 
-router.post('/add',  async function(req,res,next){
+router.post('/stadium_add',verifyToken,  async function(req,res,next){
     
     const stadium_name = req.body.st_name;
     const description = req.body.description;

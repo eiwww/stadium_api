@@ -60,7 +60,7 @@ router.post('/login', async (req,res) => {
                         .status(400)
                         .send({ error: "Wrong Username and Password Combination!" });
                 }else{
-                    jwt.sign({data:result[0][0].c_id,role:result[0][0].role}, "secret", (er, token) => {
+                    jwt.sign({data:result[0][0].c_id}, "secret", (er, token) => {
                         if(er) return res.status(404).json({er})
                         //res.cookie("access-token", token, { httpOnly: true});
                         res.status(200);
@@ -80,6 +80,7 @@ router.post('/login', async (req,res) => {
 router.get('/login/user',verifyToken, (req, res) => {
     jwt.verify(req.token, "secret", async (err, authData) => {
         if(err){
+            console.log(err);
             res.sendStatus(403);
         }else{
             const user_id = authData.data;

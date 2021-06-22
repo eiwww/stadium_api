@@ -27,52 +27,46 @@ router.get('/', async function(req,res,next){
 
 
 router.post('/booking', async (req,res) => {
-    const stadium_id = req.body.st_id;
-    const stuff_id = req.body.su_id;
-
-    const name = req.body.b_name;
-    const team = req.body.b_team;
-    const tel = req.body.b_tel;
     
-    db.query("select time_cancelbooking from tbstadium where st_id=?", [stadium_id], async (err,resu) => {
-        const timecancel = resu[0].time_cancelbooking;
-        if(timecancel === 0){
-            await db.query("call reserve_nou_notime(?,?)", [stadium_id,stuff_id], (err, result) => {
-                if(err){
-                    res.status(400)
-                    console.log(err);
-                }
-            }) // ເພີ່ມຂໍ້ມູນການຈອງຫຼັກໂດຍພະນັກງານ ຖ້າບໍ່ມີເວລາຍົກເລີກ
+    const staff_id = req.body.s_id;
+    const name = req.body.name;
+    const team = req.body.team;
+    const tel = req.body.tel;
+    
+    db.query("select b_id,booking_status,paid_status from tbbooking where su_id=? ORDER BY b_id DESC LIMIT 0, 1", [staff_id], (err,resu) => {
+        if((resu[0].booking_status === "ຍັງບໍ່ຈອງ" && resu[0].paid_status === "ຍັງບໍ່ຈ່າຍ") || (resu[0].booking_status === "ຈອງແລ້ວ" && resu[0].paid_status === "ຍັງບໍ່ຈ່າຍ")){
+            res.status(200).send((resu[0].b_id).toString());
         }else{
-            await db.query("call reserve_nou(?,?,?)", [stadium_id,stuff_id,timecancel], (err, result) => {
+            
+            db.query("call reserve_staff(?)", [staff_id], (err, resul) => { 
                 if(err){
                     res.status(400)
                     console.log(err);
+                    res.send("Something Wrong")
+                }else{
+                    db.query("select b_id,booking_status,paid_status from tbbooking where su_id=? ORDER BY b_id DESC LIMIT 0, 1", [staff_id], (err,bid) => {
+                        if(err){
+                            return res.send(err).status(400)
+                        } else {
+                            const book_id = (bid[0].b_id).toString()
+                            db.query("call reserve_nou_add(?,?,?,?)", [book_id,name,team,tel], (err1, result) => {
+                                if(err1){
+                                    res.status(400)
+                                    console.log(err1);
+                                }
+                                else{
+                                    res.send(200);
+                                    res.send(book_id);
+                                }
+                            }) // ເພີ່ມຂໍ້ມູນຜູ້ໃຊ້ທີ່ບໍ່ມີບັນຊີ
+                        }
+                        
+                    })
                 }
-            }) // ເພີ່ມຂໍ້ມູນການຈອງຫຼັກໂດຍພະນັກງານ
+            })
         }
-        
-    
-        await db.query("select MAX(b_id) as mid from tbbooking where su_id=?", [stuff_id], (err, resu) => {
-            const book_id = resu[0].mid; 
-            db.query("call reserve_nou_add(?,?,?,?)", [book_id,name,team,tel], (err1, result) => {
-                if(err1){
-                    res.status(400)
-                    console.log(err1);
-                }
-                else{
-                    res.send(200);
-                    res.send(book_id);
-                }
-            }) // ເພີ່ມຂໍ້ມູນຜູ້ໃຊ້ທີ່ບໍ່ມີບັນຊີ
-        })
     })
-
     
-    
-
-    // res.status(200)
-    // res.send("Reserving");
 
 }) // ເພີ່ມລາຍການຈອງ ||||||||||||||||||||||||||||||||||||||||||||||||||
 
@@ -109,7 +103,37 @@ router.post('/bookingfield', async (req,res) => {
 }) // ເພີ່ມເດີ່ນທີ່ຈອງ ||||||||||||||||||||||||||||||||||||||||||||||||||
 
 
+router.put('/accept', async (req,res) => {
+    const stadium_id = req.body.st_id;
+    const book_id = req.body.b_id;
+    
+    db.query("select time_cancelbooking from tbstadium where st_id=?", [stadium_id], async (err,resu) => {
+        const timecancel = resu[0].time_cancelbooking;
+        if(timecancel === 0){
+            await db.query("call reserve_nou_notime(?,?)", [stadium_id,book_id], (err, result) => {
+                if(err){
+                    res.status(400)
+                    console.log(err);
+                }else{
+                    res.status(200)
+                    res.send("Reserve");
+                }
+            }) // ເພີ່ມຂໍ້ມູນການຈອງຫຼັກໂດຍພະນັກງານ ຖ້າບໍ່ມີເວລາຍົກເລີກ
+        }else{
+            await db.query("call reserve_nou(?,?,?)", [stadium_id,timecancel,book_id], (err, result) => {
+                if(err){
+                    res.status(400)
+                    console.log(err);
+                }else{
+                    res.status(200)
+                    res.send("Reserve");
+                }
+            }) // ເພີ່ມຂໍ້ມູນການຈອງຫຼັກໂດຍພະນັກງານ
+        }
+    })
 
+    
+}) // ຢືນຢັນການຈອງ ||||||||||||||||||||||||||||||||||||||||||||||||||
 
 
 // CHECK IF DATE CAN CANCEL : SELECT booking_timecancel>=now() from `tbbooking` where b_id='stt1' // if = 0 man yok lerk br dai // if = 1 man yok lerk dai 

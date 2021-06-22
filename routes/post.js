@@ -19,7 +19,43 @@ router.get("/", (req, res) => {
   });
 }); //ສະແດງໂພສຢູ່ໜ້າ home user
 
-router.post("/", (req, res) => {
+
+router.get("/getPostByStadiumId/:stadiumId", async function (req, res) {
+  const stadiumId = req.params.stadiumId
+  await db.query("call get_post_byStadiumId(?)", [stadiumId], (err, result) => {
+      if (err) {
+          console.log(err);
+          return res.status(400).send('ເກີດຂໍ້ຜິດພາດ!!');
+      }
+
+      if (result[0].length > 0) {
+          return res.send(result[0])
+      } else {
+          return res.status(404).send('ບໍ່ມີຂໍ້ມູນ!!')
+      }
+  })
+}); //ສະແດງໂພສຂອງເດີ່ນນັ້ນໆ
+
+
+router.get("/getPostByStadiumIdPostId/:stadiumId/:postId", async function (req, res) {
+  const stadiumId = req.params.stadiumId;
+  const postId = req.params.postId;
+  await db.query("call get_post_byStadiumId_postId(?, ?)", [stadiumId, postId], (err, result) => {
+      if (err) {
+          console.log(err);
+          return res.status(400).send('ເກີດຂໍ້ຜິດພາດ!!');
+      }
+
+      if (result[0].length > 0) {
+          return res.send(result[0][0])
+      } else {
+          return res.status(404).send('ບໍ່ມີຂໍ້ມູນ!!')
+      }
+  })
+}); //ສະແດງລາຍລະອຽດໂພສຂອງຕົວນັ້ນໆ
+
+
+router.post("/addPost", (req, res) => {
   const stadium_id = req.body.st_id;
   const title = req.body.post_title;
   const description = req.body.description;

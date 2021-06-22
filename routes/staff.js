@@ -87,58 +87,83 @@ router.get('/login/authen',verifyToken, (req, res) => {
 }) // authen ສົ່ງຂໍ້ມູນທີ່ແປງຈາກ token ||||||||||||||||||||||||||||||||||||||||||||||||||
 
 
-router.post('/', async function(req,res,next) {
-    const stadium_id = req.body.st_id;
-    const staff_name = req.body.su_name;
-    const staff_surname = req.body.su_surname;
-    const staff_age = req.body.su_age;
-    const staff_status = req.body.role;
-    const staff_email = req.body.su_email;
-    const staff_password = req.body.su_password;
-    const img = null;
+router.post('/add', async function(req,res,next) {
+    const staff_name = req.body.firstName;
+    const staff_surname = req.body.lastName;
+    const staff_age = req.body.age;
+    const staff_email = req.body.email;
+    const staff_password = req.body.password;
+    const img = "defualt.jpg";
 
-    await db.query("call check_staff_email(?)", [staff_email], (err,result) => {
-        if(result[0].length > 0){
-            res.status(400)
-            res.send("Email Already used!");
-        }else{
-            if(!req.files){
-                bcrypt.hash(staff_password, 10).then((hash) => {
-                    db.query("call staff_add(?,?,?,?,?,?,?,?)" , [stadium_id,staff_name,staff_surname,staff_age,staff_email,hash,img,staff_status],(err,result) => {
-                        if(err){
-                            res.status(400).json({ error: err });
-                        }else{
-                            res.Status(200)
-                            res.send("Staff Complete");
-                        }
-                    })
-                })
-            }else{
+    await db.query(
+      "call check_staff_email(?)",
+      [staff_email],
+      (err, result) => {
+        if (result[0].length > 0) {
+          res.status(400);
+          res.send("Email Already used!");
+        } else {
+          if (!req.files) {
+            bcrypt.hash(staff_password, 10).then((hash) => {
+              db.query(
+                "call staff_add(?,?,?,?,?,?,?)",
+                [
+                  staff_name,
+                  staff_surname,
+                  staff_age,
+                  staff_email,
+                  hash,
+                  img,
+                  "manager",
+                ],
+                (err, result) => {
+                  if (err) {
+                    console.log(err);
+                    res.status(400).json({ error: err });
+                  } else {
+                    res.status(200);
+                    res.send("Staff Complete");
+                  }
+                }
+              );
+            });
+          } else {
+            let sampleFile = req.files.sampleFile;
+            let uploadPath = "./upload/staff/" + sampleFile.name;
 
-                let sampleFile = req.files.sampleFile;
-                let uploadPath = "./upload/staff/"+sampleFile.name;
+            sampleFile.mv(uploadPath, function (err) {
+              if (err) return res.status(500).send(err);
 
-                sampleFile.mv(uploadPath, function(err){
-                    if(err) return res.status(500).send(err);
+              const im = sampleFile.name;
 
-                    const im = sampleFile.name;
-
-                    bcrypt.hash(staff_password, 10).then((hash) => {
-                        db.query("call staff_add(?,?,?,?,?,?,?,?)" , [stadium_id,staff_name,staff_surname,staff_age,staff_email,hash,im,staff_status],(err,result) => {
-                            if(err){
-                                res.status(400).json({ error: err });
-                            }else{
-                                res.status(200)
-                                res.send("Staff Complete");
-                            }
-                        })
-                    })
-                })
-
-            }
-            
+              bcrypt.hash(staff_password, 10).then((hash) => {
+                db.query(
+                  "call staff_add(?,?,?,?,?,?,?,?)",
+                  [
+                    stadium_id,
+                    staff_name,
+                    staff_surname,
+                    staff_age,
+                    staff_email,
+                    hash,
+                    im,
+                    "manager",
+                  ],
+                  (err, result) => {
+                    if (err) {
+                      res.status(400).json({ error: err });
+                    } else {
+                      res.status(200);
+                      res.send("Staff Complete");
+                    }
+                  }
+                );
+              });
+            });
+          }
         }
-    })
+      }
+    );
     
 }) // ເພີ່ມພະນັກງານຂອງເດີ່ນ ||||||||||||||||||||||||||||||||||||||||||||||||||
 
