@@ -83,19 +83,6 @@ router.get('/show', async (req,res) => {
     })
 }) // ສະແດງຕາຕະລາງເດີ່ນທັງໝົດ ||||||||||||||||||||||||||||||||||||||||||||||||||
 
-router.get('/show/phone', async function(req,res,next){
-    const stadium_id = req.body.st_id;
-    await db.query("call stadium_phone(?)", [stadium_id], (err, result) => {
-        if(err){
-            res.status(400)
-            console.log(err);
-        }else{
-            res.status(200)
-            res.send(result[0]);
-        }
-    })
-}) // ສະແດງຕາຕະລາງເບີໂທຂອງເດີ່ນ ||||||||||||||||||||||||||||||||||||||||||||||||||
-
 
 // router.get('/test/test' ,async function(req,res,next){
     
@@ -134,6 +121,7 @@ router.post('/stadium_add',verifyToken,  async function(req,res,next){
     const district = req.body.district;
     const province = req.body.province;
     const time_cancel = req.body.time_cancelbooking;
+    const phone = req.body.phone;
     
     db.query("select MAX(st_id) as mid from tbstadium", async (err,resu) => {
         if(resu[0].mid === null){
@@ -172,7 +160,7 @@ router.post('/stadium_add',verifyToken,  async function(req,res,next){
         
                                 
         
-                                await db.query("call stadium_add(?,?,?,?,?,?,?,?,?,?)", [stadium_id,stadium_name,description,configcode,village,district,province,time_cancel,lg,img], (err,result) => {
+                                await db.query("call stadium_add(?,?,?,?,?,?,?,?,?,?,?)", [stadium_id,stadium_name,description,configcode,village,district,province,time_cancel,lg,img,phone], (err,result) => {
                                     if(err){
                                         res.status(400)
                                         console.log(err);
@@ -251,7 +239,7 @@ router.post('/stadium_add',verifyToken,  async function(req,res,next){
                     
                                 const img = sampleFile.name;
 
-                                await db.query("call stadium_add(?,?,?,?,?,?,?,?,?,?)", [stadium_id,stadium_name,description,configcode,village,district,province,time_cancel,lg,img], (err,result) => {
+                                await db.query("call stadium_add(?,?,?,?,?,?,?,?,?,?,?)", [stadium_id,stadium_name,description,configcode,village,district,province,time_cancel,lg,img,phone], (err,result) => {
                                     if(err){
                                         res.status(400)
                                         console.log(err);
@@ -297,35 +285,6 @@ router.post('/stadium_add',verifyToken,  async function(req,res,next){
 }) // ເພີ່ມເດີ່ນເຂົ້າໃນລະບົບ ||||||||||||||||||||||||||||||||||||||||||||||||||
 
 
-router.post('/add/phone', async function(req,res,next){
-    const stadium_id = req.body.st_id;
-    const stadium_ph = req.body.st_phone;
-    await db.query("call stadium_phone_add(?,?)", [stadium_id,stadium_ph], (err,result) => {
-        if(err){
-            res.status(400)
-            console.log(err);
-        }else{
-            res.status(200)
-            res.send(result);
-        }
-    })
-}) // ເພີ່ມເບີໂທໃຫ້ເດີ່ນ ||||||||||||||||||||||||||||||||||||||||||||||||||
-
-router.delete('/delete/phone', async function(req,res,next){
-    const stadium_id = req.body.st_id;
-    const stadium_ph = req.body.st_phone;
-    await db.query("call stadium_phone_delete(?,?)", [stadium_id,stadium_ph], (err,result) => {
-        if(err){
-            res.status(400)
-            console.log(err);
-        }else{
-            res.status(200)
-            res.send(result);
-        }
-    })
-}) // ລົບເບີໂທເດີ່ນ ||||||||||||||||||||||||||||||||||||||||||||||||||
-
-
 router.put('/edit', async function(req,res,next){
     const stadium_id = req.body.st_id;
     const stadium_name = req.body.st_name;
@@ -336,10 +295,11 @@ router.put('/edit', async function(req,res,next){
     const time_cancel = req.body.time_cancelbooking;
     const logo_old = req.body.logo_pic;
     const img_old = req.body.picture;
+    const phone = req.body.phone;
     const stadium_status = req.body.status;
 
     if(!req.files){
-        db.query("call stadium_update(?,?,?,?,?,?,?,?,?,?)", [stadium_name,description,village,district,province,time_cancel,logo_old,img_old,stadium_status,stadium_id], (err,result) => {
+        db.query("call stadium_update(?,?,?,?,?,?,?,?,?,?,?)", [stadium_name,description,village,district,province,time_cancel,logo_old,img_old,phone,stadium_status,stadium_id], (err,result) => {
             if(err){
                 res.status(400)
                 console.log(err);
@@ -357,7 +317,7 @@ router.put('/edit', async function(req,res,next){
                 if(err) return res.status(500).send(err);
                 
                 const im = sampleFile.name;
-                db.query("call stadium_update(?,?,?,?,?,?,?,?,?,?)", [stadium_name,description,village,district,province,time_cancel,logo_old,im,stadium_status,stadium_id], (err,result) => {
+                db.query("call stadium_update(?,?,?,?,?,?,?,?,?,?,?)", [stadium_name,description,village,district,province,time_cancel,logo_old,im,phone,stadium_status,stadium_id], (err,result) => {
                     if(err){
                         res.status(400)
                         console.log(err);
@@ -377,7 +337,7 @@ router.put('/edit', async function(req,res,next){
 
                 const lg = logo.name;
                 
-                db.query("call stadium_update(?,?,?,?,?,?,?,?,?,?)", [stadium_name,description,village,district,province,time_cancel,lg,img_old,stadium_status,stadium_id], (err,result) => {
+                db.query("call stadium_update(?,?,?,?,?,?,?,?,?,?,?)", [stadium_name,description,village,district,province,time_cancel,lg,img_old,phone,stadium_status,stadium_id], (err,result) => {
                     if(err){
                         res.status(400)
                         console.log(err);
@@ -404,7 +364,7 @@ router.put('/edit', async function(req,res,next){
                     if(err) return res.status(500).send(err);
                     
                     const im = sampleFile.name;
-                    db.query("call stadium_update(?,?,?,?,?,?,?,?,?,?)", [stadium_name,description,village,district,province,time_cancel,lg,im,stadium_status,stadium_id], (err,result) => {
+                    db.query("call stadium_update(?,?,?,?,?,?,?,?,?,?,?)", [stadium_name,description,village,district,province,time_cancel,lg,im,phone,stadium_status,stadium_id], (err,result) => {
                         if(err){
                             res.status(400)
                             console.log(err);
