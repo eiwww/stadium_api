@@ -22,19 +22,20 @@ router.get('/', async function(req, res, next) {
 }) // ສະແດງລາຍການລາຄາຂອງເດີ່ນນັ້ນ ||||||||||||||||||||||||||||||||||||||||||||||||||
 
 router.post('/', async function(req ,res, next) {
-    const field_id = req.body.std_id;
-    const timing_id = req.body.td_id;
-    const field_price = req.body.sp_price;
 
-    await db.query("call stadium_price_add(?,?,?)", [field_id,timing_id,field_price], (err, result) => {
-        if(err){
-            res.status(400)
-            console.log(err);
-        }else{
-            res.status(200)
-            res.send(result);
-        }
-    })
+    const data = req.body.data;
+
+    for(let i=0; i < data.length; i++){
+        await db.query("call stadium_price_add(?,?,?)", [data[i].std_id,data[i].td_id,data[i].sp_price], (err, result) => {
+            if(err){
+                return res.status(400).send(err);
+            }
+        })
+    }
+
+    res.status(200)
+    res.send("Insert Complete");
+    
 }) // ໃສ່ລາຄາເດີ່ນຕາມເວລາ ||||||||||||||||||||||||||||||||||||||||||||||||||
 
 router.put('/', async function(req, res, next) {
