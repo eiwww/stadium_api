@@ -1,6 +1,8 @@
 var express = require("express");
 var router = express.Router();
 
+const fs = require('fs');
+
 const mysql = require("mysql");
 const dbconfig = require("../dbConnect/dbconnect");
 
@@ -40,7 +42,7 @@ router.get("/getPostByStadiumId/:stadiumId", async function (req, res) {
 router.get("/getPostByStadiumIdPostId/:stadiumId/:postId", async function (req, res) {
   const stadiumId = req.params.stadiumId;
   const postId = req.params.postId;
-  await db.query("call get_post_byStadiumId_postId(?, ?)", [stadiumId, postId], (err, result) => {
+  await db.query("call get_post_byStadiumId_postId(?,?)", [stadiumId, postId], (err, result) => {
       if (err) {
           console.log(err);
           return res.status(400).send('ເກີດຂໍ້ຜິດພາດ!!');
@@ -140,6 +142,10 @@ router.delete('/', (req,res) => {
         } else {
             res.status(200);
             res.send("POST DELETE");
+            let uploadPath = `${__dirname}/../../Clients/public/assets/images/adminPics/postPics/${postImage}`;
+            let uploadPathToAdminFolder = `${__dirname}/../../Admin/public/assets/images/adminPics/stadiumPics/postPics/${postImage}`;
+            fs.unlink(uploadPath, (err) => { if (err) return res.status(500).send('ລຶບຜິດພາດ!!') })
+            fs.unlink(uploadPathToAdminFolder, (err) => { if (err) return res.status(500).send('ລຶບຜິດພາດ!!') })
         }
     })
 }); //ລົບໂພສຂອງສະໜາມ

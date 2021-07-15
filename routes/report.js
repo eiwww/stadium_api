@@ -59,4 +59,42 @@ router.get("/today_income/:st_id", (req,res) => {
     })
 })  // ລາຍງານລາຍຮັບທັງໝົດຂອງເດີ່ນນັ້ນໃນມື້ນັ້ນ
 
+router.get("/reserve/:st_id", (req,res) => {
+    const stadium_id = req.params.st_id;
+    db.query("call report_stadium_reserve(?)", [stadium_id], (err,result) => {
+        if(err) {
+            res.status(400);
+            console.log(err);
+        }else{
+            res.status(200);
+            res.send(result[0]);
+        }
+    })
+})  // ລາຍງານການຈອງທັງໝົດຂອງເດີ່ນນັ້ນໆ
+
+router.get("/payment/:st_id", (res,req) => {
+    const stadium_id = req.params.st_id;
+    db.query("call report_stadium_payment(?)", [stadium_id], (err,result) => {
+        if(err) {
+            res.status(400);
+            console.log(err);
+        }else{
+            res.status(200);
+            res.send(result[0]);
+        }
+    })
+})  // ລາຍງານການຊໍາລະເງິນທັງໝົດຂອງເດີ່ນນັ້ນໆ
+
+router.get("/user/booking/:c_id", (res,req) => {
+    const user_id = req.params.c_id;
+    db.query("call report_user_reserve(?)", [user_id], (err,result) => {
+        if(err){
+            res.status(400);
+            console.log(err);
+        }else{
+            res.status(200);
+            res.send(result[0]);
+        }
+    })
+})
 module.exports = router;
