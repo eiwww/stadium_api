@@ -57,4 +57,27 @@ router.delete('/field/:b_id', async (req,res) => {
 }) // ຍົກເລີກການຈອງ ||||||||||||||||||||||||||||||||||||||||||||||||||
 
 
+router.get('/reserve/cancel', async (req,res) => {
+    await db.query("call reserve_show_cancel()", (err, result) => {
+        if(err){
+            res.status(400)
+        }else{
+            res.status(200);
+            res.send(result);
+        }
+    })
+}) // ສະແດງລາຍການທີ່ສາມາດຍົກເລີກການໄດ້ ||||||||||||||||||||||||||||||||||||||||||||||||||
+
+
+router.get('/reserve/nocancel', async (req,res) => {
+    await db.query("call reserve_show_no_cancel()", (err, result) => {
+        if(err){
+            res.status(400)
+        }else{
+            res.status(200);
+            res.send(result);
+        }
+    })
+}) // ສະແດງລາຍການທີ່ສາມາດບໍ່ຍົກເລີກການໄດ້ ||||||||||||||||||||||||||||||||||||||||||||||||||
+
 module.exports = router;

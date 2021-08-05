@@ -96,5 +96,8 @@ router.get("/user/booking/:c_id", (res,req) => {
             res.send(result[0]);
         }
     })
-})
+})  // ລາຍງານການຈອງທັງໝົດຂອງຜູ້ໃຊ້ຄົນນັ້ນໆ
+
+
+
 module.exports = router;
