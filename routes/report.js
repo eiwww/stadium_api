@@ -72,6 +72,32 @@ router.get("/reserve/:st_id", (req,res) => {
     })
 })  // ລາຍງານການຈອງທັງໝົດຂອງເດີ່ນນັ້ນໆ
 
+router.get("/reserve/finish/:st_id", (req,res) => {
+    const stadium_id = req.params.st_id;
+    db.query("call report_stadium_reserve_finish(?)", [stadium_id], (err,result) => {
+        if(err) {
+            res.status(400);
+            console.log(err);
+        }else{
+            res.status(200);
+            res.send(result[0]);
+        }
+    })
+})  // ລາຍງານການຈອງທັງໝົດຂອງເດີ່ນນັ້ນໆ ທີ່ຈອງ ແລະ ຈ່າຍເງິນແລ້ວ
+
+router.get("/reserve/notfinish/:st_id", (req,res) => {
+    const stadium_id = req.params.st_id;
+    db.query("call report_stadium_reserve_not_finish(?)", [stadium_id], (err,result) => {
+        if(err) {
+            res.status(400);
+            console.log(err);
+        }else{
+            res.status(200);
+            res.send(result[0]);
+        }
+    })
+})  // ລາຍງານການຈອງທັງໝົດຂອງເດີ່ນນັ້ນໆ ທີ່ຈອງ ແຕ່ບໍ່ທັນຈ່າຍເງິນ
+
 router.get("/reserve/:st_id/:re_date", (req,res) => {
     const stadium_id = req.params.st_id;
     const date_res = req.params.re_date;
