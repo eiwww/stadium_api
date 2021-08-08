@@ -72,6 +72,21 @@ router.get("/reserve/:st_id", (req,res) => {
     })
 })  // ລາຍງານການຈອງທັງໝົດຂອງເດີ່ນນັ້ນໆ
 
+router.get("/reserve/:st_id/:re_date", (req,res) => {
+    const stadium_id = req.params.st_id;
+    const date_res = req.params.re_date;
+    
+    db.query("call report_stadium_reserve_date(?,?)", [stadium_id, date_res], (err,result) => {
+        if(err) {
+            res.status(400);
+            console.log(err);
+        }else{
+            res.status(200);
+            res.send(result[0]);
+        }
+    })
+})  // ລາຍງານການຈອງທັງໝົດຂອງເດີ່ນນັ້ນໆ ໃນວັນທີ່ເລືອກ
+
 router.get("/payment/:st_id", (res,req) => {
     const stadium_id = req.params.st_id;
     db.query("call report_stadium_payment(?)", [stadium_id], (err,result) => {
@@ -84,6 +99,20 @@ router.get("/payment/:st_id", (res,req) => {
         }
     })
 })  // ລາຍງານການຊໍາລະເງິນທັງໝົດຂອງເດີ່ນນັ້ນໆ
+
+router.get("/payment/:st_id/:re_date", (res,req) => {
+    const stadium_id = req.params.st_id;
+    const pay_date = req.params.re_date;
+    db.query("call report_stadium_payment_date(?,?)", [stadium_id,pay_date], (err,result) => {
+        if(err) {
+            res.status(400);
+            console.log(err);
+        }else{
+            res.status(200);
+            res.send(result[0]);
+        }
+    })
+})  // ລາຍງານການຊໍາລະເງິນທັງໝົດຂອງເດີ່ນນັ້ນໆ ໃນວັນທີ່ເລືອກ
 
 router.get("/user/booking/:c_id", (res,req) => {
     const user_id = req.params.c_id;
